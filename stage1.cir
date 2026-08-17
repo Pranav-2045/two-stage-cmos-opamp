@@ -1,0 +1,24 @@
+* Stage 1 Op-Amp Operating Point Analysis
+.include tsmc018.lib
+
+V1 VDD 0 1.8V
+V2 Vinp 0 1.2V
+V3 Vinn 0 1.2V
+Iref VDD Vbias 20u
+
+* Bias Diode NMOS
+Mbias Vbias Vbias 0 0 CMOSN L=0.36u W=1.44u
+
+* Tail NMOS
+M0 Vtail Vbias 0 0 CMOSN L=0.36u W=7.2u
+
+* Differential Pair NMOS
+M1 Vout1 Vinn Vtail 0 CMOSN L=0.18u W=3.24u
+M2 Vout_stage1 Vinp Vtail 0 CMOSN L=0.18u W=3.24u
+
+* Active Load PMOS
+M3 Vout1 Vout1 VDD VDD CMOSP L=0.36u W=18u
+M4 Vout_stage1 Vout1 VDD VDD CMOSP L=0.36u W=18u
+
+.op
+.end

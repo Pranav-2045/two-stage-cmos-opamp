@@ -1,0 +1,45 @@
+* Phase 5: Two-Stage Op-Amp AC Analysis - FINAL Iteration 7
+* Tuning: Rc increased to 750 ohms, Cc = 1.9pF
+.include tsmc018.lib
+
+* Power Supply
+V1 VDD 0 1.8V
+
+* Input Sources
+V2 Vinp 0 DC 1.2 AC 1
+V3 Vinn 0 DC 1.2
+
+* Reference Current
+Iref VDD Vbias 20u
+
+* Stage 1 - Bias Diode NMOS
+Mbias Vbias Vbias 0 0 CMOSN L=0.36u W=1.44u
+
+* Stage 1 - Tail NMOS
+M0 Vtail Vbias 0 0 CMOSN L=0.5u W=10u
+
+* Stage 1 - Differential Pair NMOS
+M1 Vout1 Vinn Vtail 0 CMOSN L=0.5u W=11u
+M2 Vout_stage1 Vinp Vtail 0 CMOSN L=0.5u W=11u
+
+* Stage 1 - Active Load PMOS
+M3 Vout1 Vout1 VDD VDD CMOSP L=0.5u W=25u
+M4 Vout_stage1 Vout1 VDD VDD CMOSP L=0.5u W=25u
+
+* Stage 2 - PMOS Common-Source Driver
+M11 out Vout_stage1 VDD VDD CMOSP L=0.5u W=78.5u
+
+* Stage 2 - NMOS Current Source Load
+M12 out Vbias 0 0 CMOSN L=0.5u W=15.7u
+
+* Compensation Network (Rc=750, Cc=1.9pF)
+Rc Vout_stage1 net_cc 750
+Cc net_cc out 1.9p
+
+* Load Capacitance
+CL out 0 2p
+
+* AC Analysis
+.ac dec 100 1 10G
+
+.end

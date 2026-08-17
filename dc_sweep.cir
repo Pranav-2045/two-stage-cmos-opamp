@@ -1,0 +1,21 @@
+* DC Transfer & ICMR Sweep (Unity-Gain Buffer)
+.include tsmc018.lib
+
+V1 VDD 0 1.8V
+V2 Vinp 0 1.2
+Iref VDD Vbias 20u
+
+Mbias Vbias Vbias 0 0 CMOSN L=0.36u W=1.44u
+M0 Vtail Vbias 0 0 CMOSN L=0.5u W=10u
+M1 Vout1 out Vtail 0 CMOSN L=0.5u W=11u
+M2 Vout_stage1 Vinp Vtail 0 CMOSN L=0.5u W=11u
+M3 Vout1 Vout1 VDD VDD CMOSP L=0.5u W=25u
+M4 Vout_stage1 Vout1 VDD VDD CMOSP L=0.5u W=25u
+M11 out Vout_stage1 VDD VDD CMOSP L=0.5u W=78.5u
+M12 out Vbias 0 0 CMOSN L=0.5u W=15.7u
+Rc Vout_stage1 net_cc 750
+Cc net_cc out 1.9p
+CL out 0 2p
+
+.dc V2 0 1.8 1m
+.end

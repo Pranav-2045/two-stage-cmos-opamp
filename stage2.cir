@@ -1,0 +1,38 @@
+* Phase 4: Two-Stage Op-Amp DC Operating Point Simulation
+.include tsmc018.lib
+
+* Voltage and Current Sources
+V1 VDD 0 1.8V
+V2 Vinp 0 1.2V
+V3 Vinn 0 1.2V
+Iref VDD Vbias 20u
+
+* Stage 1 - Bias Diode NMOS
+Mbias Vbias Vbias 0 0 CMOSN L=0.36u W=1.44u
+
+* Stage 1 - Tail NMOS
+M0 Vtail Vbias 0 0 CMOSN L=0.36u W=7.2u
+
+* Stage 1 - Differential Pair NMOS
+M1 Vout1 Vinn Vtail 0 CMOSN L=0.18u W=3.24u
+M2 Vout_stage1 Vinp Vtail 0 CMOSN L=0.18u W=3.24u
+
+* Stage 1 - Active Load PMOS
+M3 Vout1 Vout1 VDD VDD CMOSP L=0.36u W=18u
+M4 Vout_stage1 Vout1 VDD VDD CMOSP L=0.36u W=18u
+
+* Stage 2 - PMOS Common-Source Driver
+M11 out Vout_stage1 VDD VDD CMOSP L=0.36u W=56.52u
+
+* Stage 2 - NMOS Current Source Load
+M12 out Vbias 0 0 CMOSN L=0.36u W=11.30u
+
+* Compensation Network
+Rc Vout_stage1 net_cc 637
+Cc net_cc out 1.6p
+
+* Load Capacitance
+CL out 0 2p
+
+.op
+.end

@@ -1,0 +1,26 @@
+# LTspice Simulation Outputs
+*.raw
+*.op.raw
+*.fft.raw
+*.log
+*.plt
+*.fail
+*_1.cir
+*_2.cir
+*_3.cir
+*_4.cir
+*_5.cir
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# OS / Editor Files
+.DS_Store
+Thumbs.db
+*.swp
+*.bak
