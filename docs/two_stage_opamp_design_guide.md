@@ -1,6 +1,6 @@
 # Two-Stage CMOS Miller-Compensated Op-Amp Design Guide
 **Technology:** TSMC 0.18µm CMOS  
-**Author / Designer:** Analog IC Design Campus Placement Project  
+**Author / Designer:** Pranav Varma  
 **Reference Document:** Prof. Nagendra Krishnapura (IIT Madras) — *Integrated Circuit Operational Amplifiers*
 
 ---
