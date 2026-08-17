@@ -159,14 +159,14 @@ $$\frac{W}{L} = \frac{2\,I_D}{\mu C_{ox}\,V_{DSAT}^2}$$
 ## 🧪 Phase 3: Stage 1 Terminal Simulation & Visual Hover Verification
 
 ### 1. Terminal Execution Log Summary
-* **Netlist File:** [`stage1.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage1.cir)
-* **Schematic File:** [`stage1_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage1_gui.asc)
+* **Netlist File:** [`stage1.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage1.cir)
+* **Schematic File:** [`stage1_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage1_gui.asc)
 * **Simulator:** ADI LTspice 26.0.2 via PyLTSpice
 * **Result:** Direct Newton iteration succeeded in 0.074s. All transistors in **SATURATION**.
 
 ### 2. Interactive LTspice GUI Mouse-Hover Verification Guide for Stage 1
 
-When you run `.op` in LTspice GUI on [`stage1_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage1_gui.asc), hover over the nodes and components to verify:
+When you run `.op` in LTspice GUI on [`stage1_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage1_gui.asc), hover over the nodes and components to verify:
 
 #### Wire Node Voltage Targets (Hover over Wires)
 
@@ -208,8 +208,8 @@ Using $g_{m11} = 1570\,\mu\text{A/V}$:
 $$\boxed{R_c = \frac{1}{1570 \times 10^{-6}\,\text{A/V}} = 636.94\,\Omega \approx \mathbf{637\,\Omega}}$$
 
 ### 2. Terminal Execution Log Summary (Full Op-Amp DC `.op`)
-* **Netlist File:** [`stage2.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage2.cir)
-* **Schematic File:** [`stage12_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_gui.asc)
+* **Netlist File:** [`stage2.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage2.cir)
+* **Schematic File:** [`stage12_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_gui.asc)
 * **Simulator:** ADI LTspice 26.0.2 via PyLTSpice
 * **Total Current ($I_{supply}$):** $258.64\,\mu\text{A}$
 * **Power Dissipation ($P_{diss}$):** $465.55\,\mu\text{W}$ ($\le 500\,\mu\text{W}$ constraint MET!)
@@ -217,7 +217,7 @@ $$\boxed{R_c = \frac{1}{1570 \times 10^{-6}\,\text{A/V}} = 636.94\,\Omega \appro
 
 ### 3. Interactive LTspice GUI Mouse-Hover Verification Guide for Stage 2
 
-When you run `.op` on [`stage12_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_gui.asc) in LTspice GUI, hover over the nodes and devices to verify:
+When you run `.op` on [`stage12_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_gui.asc) in LTspice GUI, hover over the nodes and devices to verify:
 
 #### Wire Node Voltage Targets (Stage 2)
 
@@ -309,7 +309,7 @@ This section details both the **theoretical small-signal formulas** and the **ex
 * **Falling Slew Rate ($SR^-$):** When a large negative step is applied, $M_1$ takes all tail current $I_0$, and $M_2$ turns OFF. The output must discharge both the load capacitance $C_L$ and $C_c$ through the second-stage sink transistor $M_{12}$ carrying current $I_1$:
   $$SR^- = \min\left\{\frac{I_0}{C_c}, \frac{I_1}{C_L + C_c}\right\} = \min\left(54.22, \frac{167.06\,\mu\text{A}}{2.0\,\text{pF} + 1.9\,\text{pF}}\right) = \frac{167.06\,\mu\text{A}}{3.9\,\text{pF}} = \mathbf{42.84\,\text{V}/\mu\text{s}}$$
 
-#### B. SPICE Simulation Methodology ([`transient_sr.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/transient_sr.cir) / [`stage12_tran_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_tran_gui.asc))
+#### B. SPICE Simulation Methodology ([`transient_sr.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/transient_sr.cir) / [`stage12_tran_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_tran_gui.asc))
 * **Testbench Setup:** Closed-loop Unity-Gain Buffer configuration ($V_{out}$ connected directly to inverting input $M_1$ gate).
 * **Excitation Source:** $V_2$ configured as a large-signal pulse spanning the linear ICMR: `PULSE(0.8 1.6 10n 1n 1n 100n 200n)` ($\Delta V_{in} = 0.8\,\text{V}$).
 * **Simulation Directive:** `.tran 0.1n 300n`
@@ -330,7 +330,7 @@ $$A_{cm} \approx \frac{g_{ds0} g_{m11}}{2 g_{m3} (g_{ds11} + g_{ds12})}$$
 $$\text{CMRR} = \left|\frac{A_{dm}}{A_{cm}}\right| \approx \frac{2 g_{m1} g_{m3}}{g_{ds0} (g_{ds1} + g_{ds3})}$$
 *(Shows that CMRR is directly proportional to the output impedance $r_{o0} = 1/g_{ds0}$ of the tail current source).*
 
-#### B. SPICE Simulation Methodology ([`cm_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/cm_analysis.cir))
+#### B. SPICE Simulation Methodology ([`cm_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cm_analysis.cir))
 * **Testbench Setup:** Open-loop configuration with identical common-mode AC stimuli applied to both differential inputs:
   $$V_{inp} = 1.2\,\text{V}_{\text{DC}} + 1\,\text{V}_{\text{AC}} \quad \text{and} \quad V_{inn} = 1.2\,\text{V}_{\text{DC}} + 1\,\text{V}_{\text{AC}}$$
 * **Simulation Directive:** `.ac dec 100 1 10G`
@@ -348,7 +348,7 @@ $$\text{CMRR} = \left|\frac{A_{dm}}{A_{cm}}\right| \approx \frac{2 g_{m1} g_{m3}
 #### A. Theoretical Concept
 Measures the ability of the op-amp to reject high-frequency power supply ripple or noise coupled into the positive supply rail $V_{dd}$.
 
-#### B. SPICE Simulation Methodology ([`psrr_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/psrr_analysis.cir))
+#### B. SPICE Simulation Methodology ([`psrr_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/psrr_analysis.cir))
 * **Testbench Setup:** Differential inputs held at fixed DC bias ($V_{inp} = V_{inn} = 1.2\,\text{V}_{\text{DC}}$) with an AC noise ripple placed on $V_{dd}$:
   $$V_1 = 1.8\,\text{V}_{\text{DC}} + 1\,\text{V}_{\text{AC}}$$
 * **Simulation Directive:** `.ac dec 100 1 10G`
@@ -366,7 +366,7 @@ Measures the ability of the op-amp to reject high-frequency power supply ripple 
 $$S_{vi}(f) \approx \underbrace{\frac{16kT}{3 g_{m1}}\left(1 + \frac{g_{m3}}{g_{m1}}\right)}_{\text{Thermal Noise Floor}} + \underbrace{\frac{K_f}{C_{ox} W_1 L_1 f}}_{\text{Flicker (1/f) Noise}}$$
 *(Demonstrates that input pair $g_{m1}$ must be maximized to suppress both thermal noise and mirror load noise).*
 
-#### B. SPICE Simulation Methodology ([`noise_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/noise_analysis.cir))
+#### B. SPICE Simulation Methodology ([`noise_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/noise_analysis.cir))
 * **Testbench Setup:** Open-loop op-amp with DC bias ($V_{inp} = V_{inn} = 1.2\,\text{V}$).
 * **Simulation Directive:** `.noise V(out) V2 dec 100 1 100Meg`
 * **Numerical Calculation:**
@@ -391,7 +391,7 @@ $$S_{vi}(f) \approx \underbrace{\frac{16kT}{3 g_{m1}}\left(1 + \frac{g_{m3}}{g_{
   $$V_{out(\max)} \approx V_{dd} - |V_{DSAT11}| = 1.80 - 0.22 = \mathbf{1.58\,\text{V}}$$
   $$\text{Dynamic Peak-to-Peak Swing} = 1.58\,\text{V} - 0.20\,\text{V} = \mathbf{1.38\,\text{V}_{\text{p-p}}}$$
 
-#### B. SPICE Simulation Methodology ([`dc_sweep.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/dc_sweep.cir))
+#### B. SPICE Simulation Methodology ([`dc_sweep.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/dc_sweep.cir))
 * **Testbench Setup:** Closed-loop Unity-Gain Buffer ($V_{out}$ tied to $V_{inn}$).
 * **Simulation Directive:** `.dc V2 0 1.8 1m` (sweeps input from $0\,\text{V}$ to $1.8\,\text{V}$ in $1\,\text{mV}$ steps).
 * **Numerical Calculation:**
@@ -424,52 +424,52 @@ $$S_{vi}(f) \approx \underbrace{\frac{16kT}{3 g_{m1}}\left(1 + \frac{g_{m3}}{g_{
 
 ## 📁 Comprehensive Project Files Directory & Reference
 
-All 22 project source files are cleanly stored in [`c:\Users\prana\OneDrive\Desktop\LTSpice_projects\two stage op amp\`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/):
+All 22 project source files are cleanly stored
 
 ### 1. Technology Models, Symbols & Lecture Reference
 | File Link | File Type | Description & Role |
 | :--- | :--- | :--- |
-| [`tsmc018.lib`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/tsmc018.lib) | SPICE Model | TSMC 0.18µm BSIM3v3 Model Library (`CMOSN` and `CMOSP` definitions) |
-| [`cmosn.asy`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/cmosn.asy) | LTspice Symbol | Custom 4-terminal NMOS Symbol (Drain, Gate, Source, Bulk) |
-| [`cmosp.asy`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/cmosp.asy) | LTspice Symbol | Custom 4-terminal PMOS Symbol (Drain, Gate, Source, Bulk) |
-| [`2  stage opamp.pdf`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/2%20%20stage%20opamp.pdf) | Reference PDF | Lecture Slides on 2-Stage Op-Amps by Prof. Nagendra Krishnapura (IIT Madras) |
+| [`tsmc018.lib`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/tsmc018.lib) | SPICE Model | TSMC 0.18µm BSIM3v3 Model Library (`CMOSN` and `CMOSP` definitions) |
+| [`cmosn.asy`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cmosn.asy) | LTspice Symbol | Custom 4-terminal NMOS Symbol (Drain, Gate, Source, Bulk) |
+| [`cmosp.asy`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cmosp.asy) | LTspice Symbol | Custom 4-terminal PMOS Symbol (Drain, Gate, Source, Bulk) |
+| [`2  stage opamp.pdf`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/docs/2%20%20stage%20opamp.pdf) | Reference PDF | Lecture Slides on 2-Stage Op-Amps by Prof. Nagendra Krishnapura (IIT Madras) |
 
 ---
 
 ### 2. LTspice GUI Visual Schematic Files (`.asc`)
 | File Link | Simulation Mode | Description & Purpose |
 | :--- | :--- | :--- |
-| [`stage1_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage1_gui.asc) | `.op` | Stage 1 Differential Pair + Active Load DC operating point schematic |
-| [`stage12_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_gui.asc) | `.op` | Complete Two-Stage Op-Amp schematic with hand-calculated sizing ($L=0.18/0.36\,\mu\text{m}$) |
-| [`stage12_ac_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_ac_gui.asc) | `.ac` | Initial Hand-Calculated AC frequency sweep schematic ($62.9\,\text{dB}$ gain) |
-| [`stage12_ac_refined_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_ac_refined_gui.asc) | `.ac` | **Master Tuned Op-Amp Schematic** for Open-Loop AC Analysis ($71.0\,\text{dB}, 52.1\,\text{MHz}, 63.25^\circ$) |
-| [`stage12_tran_gui.asc`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage12_tran_gui.asc) | `.tran` | Closed-Loop Unity-Gain Buffer schematic for Large-Signal Slew Rate & Settling Time |
+| [`stage1_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage1_gui.asc) | `.op` | Stage 1 Differential Pair + Active Load DC operating point schematic |
+| [`stage12_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_gui.asc) | `.op` | Complete Two-Stage Op-Amp schematic with hand-calculated sizing ($L=0.18/0.36\,\mu\text{m}$) |
+| [`stage12_ac_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_ac_gui.asc) | `.ac` | Initial Hand-Calculated AC frequency sweep schematic ($62.9\,\text{dB}$ gain) |
+| [`stage12_ac_refined_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_ac_refined_gui.asc) | `.ac` | **Master Tuned Op-Amp Schematic** for Open-Loop AC Analysis ($71.0\,\text{dB}, 52.1\,\text{MHz}, 63.25^\circ$) |
+| [`stage12_tran_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_tran_gui.asc) | `.tran` | Closed-Loop Unity-Gain Buffer schematic for Large-Signal Slew Rate & Settling Time |
 
 ---
 
 ### 3. SPICE Simulation Netlists (`.cir`)
 | File Link | Analysis Type | Description & Purpose |
 | :--- | :--- | :--- |
-| [`stage1.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage1.cir) | `.op` | Stage 1 Netlist used for Phase 3 terminal DC bias validation |
-| [`stage2.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/stage2.cir) | `.op` | Full Op-Amp Netlist used for Phase 4 DC operating point validation |
-| [`final_opamp.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/final_opamp.cir) | `.op` | Final Tuned Op-Amp Netlist used for Phase 5 final DC saturation verification |
-| [`ac_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/ac_analysis.cir) | `.ac` | AC Open-Loop Frequency Sweep Netlist (`.ac dec 100 1 10G`) for Bode plot extraction |
-| [`pz_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/pz_analysis.cir) | `.pz` | Small-Signal Pole-Zero Analysis Netlist for extracting transfer function roots |
-| [`transient_sr.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/transient_sr.cir) | `.tran` | Transient Analysis Netlist (`.tran 0.1n 300n`) for Slew Rate and Settling Time extraction |
-| [`cm_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/cm_analysis.cir) | `.ac` | Common-Mode AC Gain Netlist for computing Common-Mode Rejection Ratio (CMRR) |
-| [`psrr_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/psrr_analysis.cir) | `.ac` | Power Supply AC Noise Netlist for computing Power Supply Rejection Ratio (PSRR+) |
-| [`noise_analysis.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/noise_analysis.cir) | `.noise` | Input-Referred & Output-Referred Noise Analysis Netlist (`1Hz` to `100MHz`) |
-| [`dc_sweep.cir`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/dc_sweep.cir) | `.dc` | DC Input Sweep Netlist for determining Input Common-Mode Range (ICMR) & Output Swing |
+| [`stage1.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage1.cir) | `.op` | Stage 1 Netlist used for Phase 3 terminal DC bias validation |
+| [`stage2.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage2.cir) | `.op` | Full Op-Amp Netlist used for Phase 4 DC operating point validation |
+| [`final_opamp.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/final_opamp.cir) | `.op` | Final Tuned Op-Amp Netlist used for Phase 5 final DC saturation verification |
+| [`ac_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/ac_analysis.cir) | `.ac` | AC Open-Loop Frequency Sweep Netlist (`.ac dec 100 1 10G`) for Bode plot extraction |
+| [`pz_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/pz_analysis.cir) | `.pz` | Small-Signal Pole-Zero Analysis Netlist for extracting transfer function roots |
+| [`transient_sr.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/transient_sr.cir) | `.tran` | Transient Analysis Netlist (`.tran 0.1n 300n`) for Slew Rate and Settling Time extraction |
+| [`cm_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cm_analysis.cir) | `.ac` | Common-Mode AC Gain Netlist for computing Common-Mode Rejection Ratio (CMRR) |
+| [`psrr_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/psrr_analysis.cir) | `.ac` | Power Supply AC Noise Netlist for computing Power Supply Rejection Ratio (PSRR+) |
+| [`noise_analysis.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/noise_analysis.cir) | `.noise` | Input-Referred & Output-Referred Noise Analysis Netlist (`1Hz` to `100MHz`) |
+| [`dc_sweep.cir`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/dc_sweep.cir) | `.dc` | DC Input Sweep Netlist for determining Input Common-Mode Range (ICMR) & Output Swing |
 
 ---
 
 ### 4. Python Automation & Characterization Scripts (`.py`)
 | File Link | Primary Output | Description & Functionality |
 | :--- | :--- | :--- |
-| [`run_stage1.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_stage1.py) | Stage 1 DC Bias & Saturation | Runs `stage1.cir` and displays verified saturation margins and node voltages |
-| [`run_stage2.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_stage2.py) | Full Op-Amp DC Bias & Power | Runs `stage2.cir` and displays verified saturation states for all 8 transistors and total power |
-| [`run_pyltspice.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_pyltspice.py) | DC Operating Points | Executes DC `.op` simulation and prints terminal voltages, branch currents, and saturation states |
-| [`run_ac_analysis.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_ac_analysis.py) | Bode Metrics ($A_o, \text{GBW}, \phi_M$) | Runs AC frequency sweep, detects $0\,\text{dB}$ crossover, calculates Phase Margin & Gain Margin |
-| [`run_pz.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_pz.py) | Pole-Zero Diagnostics | Utility script for pole-zero testing |
-| [`run_advanced_characterization.py`](file:///c:/Users/prana/OneDrive/Desktop/LTSpice_projects/two%20stage%20op%20amp/run_advanced_characterization.py) | **Full Master Datasheet** | Automated characterization suite: extracts $SR^+, SR^-$, $t_s$, CMRR, PSRR+, Noise, and ICMR |
+| [`run_stage1.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_stage1.py) | Stage 1 DC Bias & Saturation | Runs `stage1.cir` and displays verified saturation margins and node voltages |
+| [`run_stage2.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_stage2.py) | Full Op-Amp DC Bias & Power | Runs `stage2.cir` and displays verified saturation states for all 8 transistors and total power |
+| [`run_pyltspice.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_pyltspice.py) | DC Operating Points | Executes DC `.op` simulation and prints terminal voltages, branch currents, and saturation states |
+| [`run_ac_analysis.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_ac_analysis.py) | Bode Metrics ($A_o, \text{GBW}, \phi_M$) | Runs AC frequency sweep, detects $0\,\text{dB}$ crossover, calculates Phase Margin & Gain Margin |
+| [`run_pz.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_pz.py) | Pole-Zero Diagnostics | Utility script for pole-zero testing |
+| [`run_advanced_characterization.py`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/run_advanced_characterization.py) | **Full Master Datasheet** | Automated characterization suite: extracts $SR^+, SR^-$, $t_s$, CMRR, PSRR+, Noise, and ICMR |
 
