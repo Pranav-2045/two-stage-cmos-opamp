@@ -57,6 +57,11 @@ This project is built upon the analog integrated circuit design curriculum and p
    <p><b>Figure: AC Bode Plot (Magnitude & Phase)</b></p>
 </div>
 
+<div align="center">
+  <img src="images/slew_rate.png" alt="Transient Slew Rate Response" width="600"/>
+  <p><b>Figure: Large-Signal Transient Response & Slew Rate Measurement</b></p>
+</div>
+
 ---
 
 ## 📂 Repository File Structure
