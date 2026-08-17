@@ -432,7 +432,7 @@ All 22 project source files are cleanly stored
 | [`tsmc018.lib`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/tsmc018.lib) | SPICE Model | TSMC 0.18µm BSIM3v3 Model Library (`CMOSN` and `CMOSP` definitions) |
 | [`cmosn.asy`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cmosn.asy) | LTspice Symbol | Custom 4-terminal NMOS Symbol (Drain, Gate, Source, Bulk) |
 | [`cmosp.asy`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/cmosp.asy) | LTspice Symbol | Custom 4-terminal PMOS Symbol (Drain, Gate, Source, Bulk) |
-| [`2  stage opamp.pdf`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/docs/2%20%20stage%20opamp.pdf) | Reference PDF | Lecture Slides on 2-Stage Op-Amps by Prof. Nagendra Krishnapura (IIT Madras) |
+| [`2  stage opamp.pdf`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/docs/2_stage_opamp.pdf) | Reference PDF | Lecture Slides on 2-Stage Op-Amps by Prof. Nagendra Krishnapura (IIT Madras) |
 
 ---
 
