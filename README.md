@@ -54,6 +54,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 <div align="center">
   <!-- TODO: Upload your AC Bode Plot image to the images/ folder and uncomment the line below -->
    <img src="images/bode_plot.png" alt="Bode Plot" width="600"/> 
+   <p><b>Figure: AC Bode Plot (Magnitude & Phase)</b></p>
 </div>
 
 ---
