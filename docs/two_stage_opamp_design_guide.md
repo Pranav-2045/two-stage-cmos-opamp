@@ -404,19 +404,19 @@ $$S_{vi}(f) \approx \underbrace{\frac{16kT}{3 g_{m1}}\left(1 + \frac{g_{m3}}{g_{
 
 ## 🛠️ LTspice GUI Schematic Instructions
 
-### 1. Initial Hand-Calculated AC Schematic (`stage12_ac_gui.asc`)
+### 1. Initial Hand-Calculated AC Schematic ([`stage12_ac_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_ac_gui.asc))
 * Transistors: Hand-calculated sizing ($L=0.18/0.36\,\mu\text{m}$, $R_c=637\,\Omega$, $C_c=1.6\,\text{pF}$). Demonstrates the uncompensated short-channel drop ($A_o \approx 62.9\,\text{dB}$).
 
 ---
 
-### 2. Final Master Tuned AC Schematic (`stage12_ac_refined_gui.asc`)
+### 2. Final Master Tuned AC Schematic ([`stage12_ac_refined_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_ac_refined_gui.asc))
 * Transistors: M0 (`L=0.5u W=10u`), M1/M2 (`L=0.5u W=11u`), M3/M4 (`L=0.5u W=25u`), M11 (`L=0.5u W=78.5u`), M12 (`L=0.5u W=15.7u`), Mbias (`L=0.36u W=1.44u`).
 * Compensation: $R_c = 750\,\Omega$, $C_c = 1.9\,\text{pF}$, $C_L = 2.0\,\text{pF}$.
 * Directive: `.ac dec 100 1 10G`. Achieves $71.0\,\text{dB}$ gain, $52.1\,\text{MHz}$ GBW, and $63.25^\circ$ Phase Margin.
 
 ---
 
-### 3. Transient Slew Rate & Settling Testbench (`stage12_tran_gui.asc`)
+### 3. Transient Slew Rate & Settling Testbench ([`stage12_tran_gui.asc`](https://github.com/Pranav-2045/two-stage-cmos-opamp/blob/main/stage12_tran_gui.asc))
 * Closed-loop unity-gain buffer follower testbench (output `out` wired to $M_1$ gate $V_{inn}$, $V_2$ pulsed `PULSE(0.8 1.6 10n 1n 1n 100n 200n)`).
 * Directive: `.tran 0.1n 300n`. Demonstrates rising $SR^+ = 53.68\,\text{V}/\mu\text{s}$ and falling $SR^- = 36.11\,\text{V}/\mu\text{s}$.
 
