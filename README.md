@@ -17,7 +17,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 
 * 🎓 **NPTEL Course:** [Analog Integrated Circuit Design (NPTEL / IIT Madras)](https://nptel.ac.in/courses/117106030) — Comprehensive lecture series on core analog circuit theory.
 * 🌐 **Teaching Homepage:** [Prof. Nagendra Krishnapura Teaching Page](https://www.ee.iitm.ac.in/~nagendra/teaching.html) — Course lecture slides, design assignments, and curriculum resources.
-* 💻 **CAD & Simulation Info:** [CAD Resources & LTspice Setup](https://www.ee.iitm.ac.in/~nagendra/cadinfo.html) — Source of the TSMC 0.18µm BSIM3v3 model library (`tsmc018.lib`), custom 4-terminal transistor symbols (`cmosn.asy`, `cmosp.asy`), and simulation guidelines.
+* 💻 **CAD & Simulation Info:** [CAD Resources & LTspice Setup](https://www.ee.iitm.ac.in/~nagendra/cadinfo.html) — Source of the TSMC 0.18µm BSIM3v3 model library ([`tsmc018.lib`](tsmc018.lib)), custom 4-terminal transistor symbols (`cmosn.asy`, `cmosp.asy`), and simulation guidelines.
 * 📑 **Reference Slide Deck:** The reference slide deck [`docs/2_stage_opamp.pdf`](docs/2_stage_opamp.pdf) is part of his official Analog IC Design lecture notes (accessible from the Downloads / Assignments tab of the NPTEL course).
 
 ---
