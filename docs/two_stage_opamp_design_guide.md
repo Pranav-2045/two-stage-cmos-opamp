@@ -471,5 +471,5 @@ All 22 project source files are cleanly stored
 | [`run_pyltspice.py`](run_pyltspice.py) | DC Operating Points | Executes DC `.op` simulation and prints terminal voltages, branch currents, and saturation states |
 | [`run_ac_analysis.py`](run_ac_analysis.py) | Bode Metrics ($A_o, \text{GBW}, \phi_M$) | Runs AC frequency sweep, detects $0\,\text{dB}$ crossover, calculates Phase Margin & Gain Margin |
 | [`run_pz.py`](run_pz.py) | Pole-Zero Diagnostics | Utility script for pole-zero testing |
-| [`run_advanced_characterization.py`](main/run_advanced_characterization.py) | **Full Master Datasheet** | Automated characterization suite: extracts $SR^+, SR^-$, $t_s$, CMRR, PSRR+, Noise, and ICMR |
+| [`run_advanced_characterization.py`](run_advanced_characterization.py) | **Full Master Datasheet** | Automated characterization suite: extracts $SR^+, SR^-$, $t_s$, CMRR, PSRR+, Noise, and ICMR |
 
