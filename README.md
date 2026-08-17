@@ -2,7 +2,7 @@
 
 <div align="center">
   <!-- TODO: Upload your final op-amp schematic image to the images/ folder and uncomment the line below -->
-  <!-- <img src="images/schematic.png" alt="Two-Stage Op-Amp Schematic" width="800"/> -->
+   <img src="images/schematic.png" alt="Two-Stage Op-Amp Schematic" width="800"/> 
 </div>
 
 This repository contains the complete design, simulation, and advanced characterization of a **Two-Stage Miller-Compensated Operational Amplifier** implemented in **TSMC 0.18µm CMOS** technology ($V_{dd} = 1.8\,\text{V}$, $C_L = 2.0\,\text{pF}$).
@@ -53,7 +53,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 
 <div align="center">
   <!-- TODO: Upload your AC Bode Plot image to the images/ folder and uncomment the line below -->
-  <!-- <img src="images/bode_plot.png" alt="Bode Plot" width="600"/> -->
+   <img src="images/bode_plot.png" alt="Bode Plot" width="600"/> 
 </div>
 
 ---
