@@ -89,7 +89,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 > Sections **2** and **3** below are **only required if you want to build new schematics from scratch** within this project directory using the custom symbols and TSMC 0.18µm library.
 
 ### 1. File Placement & Library Dependencies
-* The model file `tsmc018.lib` and custom symbol files `cmosn.asy`, `cmosp.asy` **must be kept in the same directory** as your `.asc` schematic files. If moved to subfolders, LTspice will fail with `Cannot find symbol cmosn` or `Cannot open model file`.
+* The model file [`tsmc018.lib`](tsmc018.lib) and custom symbol files [`cmosn.asy`](cmosn.asy), [`cmosp.asy`](cmosp.asy) **must be kept in the same directory** as your `.asc` schematic files. If moved to subfolders, LTspice will fail with `Cannot find symbol cmosn` or `Cannot open model file`.
 
 ### 2. Adding & Editing SPICE Directives *(Only when creating new schematics from scratch)*
 * Press the keyboard shortcut **`.`** (period) or navigate to **Edit ➔ SPICE Directive**.
@@ -106,7 +106,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 
 ### 3. Placing Custom 4-Terminal MOSFET Symbols (`cmosn` / `cmosp`) *(Only when creating new schematics from scratch)*
 1. Press keyboard shortcut **`F2`** or **`P`** (or navigate to **Edit ➔ Component**).
-2. In the component selection dialog, click the **Top Directory Dropdown** and choose the project workspace directory (where `cmosn.asy` and `cmosp.asy` are located).
+2. In the component selection dialog, click the **Top Directory Dropdown** and choose the project workspace directory (where [`cmosn.asy`](cmosn.asy) and [`cmosp.asy`](cmosp.asy) are located).
 3. Select `cmosn` (for 4-terminal NMOS) or `cmosp` (for 4-terminal PMOS) and place it on the canvas.
 4. Right-click the placed transistor to set its dimensions (e.g. `L=0.5u W=11u`).
 
@@ -148,34 +148,34 @@ To execute all SPICE netlists and print the complete Master Datasheet in a singl
 ```bash
 python run_advanced_characterization.py
 ```
-*Automatically runs `transient_sr.cir`, `cm_analysis.cir`, `psrr_analysis.cir`, `noise_analysis.cir`, and `dc_sweep.cir`, outputting extracted parameters directly to the console.*
+*Automatically runs [`transient_sr.cir`](transient_sr.cir), [`cm_analysis.cir`](cm_analysis.cir), [`psrr_analysis.cir`](psrr_analysis.cir), [`noise_analysis.cir`](noise_analysis.cir), and [`dc_sweep.cir`](dc_sweep.cir), outputting extracted parameters directly to the console.*
 
 #### 🔍 Run Individual Testbenches:
 * **Stage 1 DC Operating Point:**
   ```bash
   python run_stage1.py
   ```
-  *Executes `stage1.cir`, outputs Stage 1 DC node voltages, branch currents, and saturation margins.*
+  *Executes [`stage1.cir`](stage1.cir), outputs Stage 1 DC node voltages, branch currents, and saturation margins.*
 * **Full Op-Amp DC Bias & Power:**
   ```bash
   python run_stage2.py
   ```
-  *Executes `stage2.cir`, verifies saturation for all 8 transistors, and checks power dissipation against the $500\,\mu\text{W}$ budget.*
+  *Executes [`stage2.cir`](stage2.cir), verifies saturation for all 8 transistors, and checks power dissipation against the $500\,\mu\text{W}$ budget.*
 * **AC Frequency Response & Bode Metrics:**
   ```bash
   python run_ac_analysis.py
   ```
-  *Executes `ac_analysis.cir` and computes DC Gain ($A_o$), GBW ($f_u$), and Phase Margin ($\phi_M$).*
+  *Executes [`ac_analysis.cir`](ac_analysis.cir) and computes DC Gain ($A_o$), GBW ($f_u$), and Phase Margin ($\phi_M$).*
 * **DC Bias Point Matrix:**
   ```bash
   python run_pyltspice.py
   ```
-  *Executes `final_opamp.cir` and dumps all node voltages and operating parameters.*
+  *Executes [`final_opamp.cir`](final_opamp.cir) and dumps all node voltages and operating parameters.*
 * **Pole-Zero Root Diagnostics:**
   ```bash
   python run_pz.py
   ```
-  *Executes `pz_analysis.cir` for transfer function pole-zero analysis.*
+  *Executes [`pz_analysis.cir`](pz_analysis.cir) for transfer function pole-zero analysis.*
 
 ---
 
