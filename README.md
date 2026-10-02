@@ -25,7 +25,7 @@ This project is built upon the analog integrated circuit design curriculum and p
 
 An interactive, browser-based stability analyzer and transient response visualizer for this two-stage CMOS op-amp design.
 
-👉 **[Launch Interactive Web Visualizer](https://<username>.github.io/<repo-name>/interactive-webpage/two_stage_cmos_op_amp_visualizer.html)**  
+👉 **[Launch Interactive Web Visualizer](https://<Pranav-2045>.github.io/<two-stage-cmos-opamp>/interactive-webpage/two_stage_cmos_op_amp_visualizer.html)**  
 *(To view the source file locally or in the repo, browse to [`/interactive-webpage/two_stage_cmos_op_amp_visualizer.html`](./interactive-webpage/two_stage_cmos_op_amp_visualizer.html))*
 * 💡 **Running Locally**: No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser.
 
