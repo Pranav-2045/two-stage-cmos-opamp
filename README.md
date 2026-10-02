@@ -28,8 +28,6 @@ An interactive, browser-based stability analyzer and transient response visualiz
 👉 **[Launch Interactive Web Visualizer](https://<username>.github.io/<repo-name>/interactive-webpage/two_stage_cmos_op_amp_visualizer.html)**  
 *(To view the source file locally or in the repo, browse to [`/interactive-webpage/two_stage_cmos_op_amp_visualizer.html`](./interactive-webpage/two_stage_cmos_op_amp_visualizer.html))*
 
----
-
 ### Key Features
 
 * **Real-Time Bode Characterization**: Simultaneous plotting of Open-Loop Gain ($A$), Loop Gain ($\beta A$), and Closed-Loop Gain ($A_{CL}$) magnitude and phase.
@@ -44,7 +42,7 @@ An interactive, browser-based stability analyzer and transient response visualiz
 
 ### Running Locally
 No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser
-
+---
 ## 📖 Complete Design Guide & Mathematical Derivations
 
 > [!IMPORTANT]
