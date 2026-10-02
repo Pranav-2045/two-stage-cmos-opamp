@@ -27,6 +27,7 @@ An interactive, browser-based stability analyzer and transient response visualiz
 
 👉 **[Launch Interactive Web Visualizer](https://<username>.github.io/<repo-name>/interactive-webpage/two_stage_cmos_op_amp_visualizer.html)**  
 *(To view the source file locally or in the repo, browse to [`/interactive-webpage/two_stage_cmos_op_amp_visualizer.html`](./interactive-webpage/two_stage_cmos_op_amp_visualizer.html))*
+* 💡 **Running Locally**: No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser.
 
 ### Key Features
 
@@ -39,9 +40,6 @@ An interactive, browser-based stability analyzer and transient response visualiz
   * **Balanced Classic**: Classical design setting $R_Z \approx 1/g_{m2}$ for Phase Margin $\approx 60^\circ$.
   * **Sandbox Mode**: Full manual control of $g_{m1}, r_1, g_{m2}, r_2, C_M, R_Z, C_L,$ and feedback factor $\beta$.
 * **Interactive SVG Topology**: Circuit schematic with interactive hover highlights corresponding to small-signal parameter groups.
-  
-Running Locally ? :
-No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser
 ---
 ## 📖 Complete Design Guide & Mathematical Derivations
 
