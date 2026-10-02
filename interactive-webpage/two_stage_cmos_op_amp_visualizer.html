@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two-Stage CMOS Op-Amp Stability Visualizer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            950: '#052e16',
+                        },
+                        vdark: '#090d16',
+                        vcard: '#111827',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- KaTeX CDN for gorgeous LaTeX rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Lucide Icons for premium visual finish -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom scrollbars for professional look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111827;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b5563;
+        }
+        .glow-green {
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        }
+        .glow-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        .glow-yellow {
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.2);
+        }
+        .glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-vdark text-slate-100 h-full flex flex-col font-sans overflow-x-hidden antialiased">
+
+    <!-- Top Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur-md px-6 py-4 flex flex-wrap justify-between items-center gap-4 sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <div class="bg-brand-500/10 p-2 rounded-lg border border-brand-500/30">
+                <i data-lucide="activity" class="w-6 h-6 text-brand-500"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                    Two-Stage CMOS Op-Amp Visualizer
+                    <span class="text-xs bg-slate-800 text-brand-500 px-2 py-0.5 rounded border border-slate-700 font-mono">v1.3</span>
+                </h1>
+                <p class="text-xs text-slate-400">Interactive Loop Stability, Bode & Transient Step Response Simulator</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-slate-400 font-mono">Engine Status:</span>
+            <span class="flex items-center gap-1.5 text-xs font-mono px-2.5 py-1 rounded bg-brand-950/50 border border-brand-500/30 text-brand-500">
+                <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                ACTIVE CALC
+            </span>
+        </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 p-6 max-w-9xl w-full mx-auto">
+        
+        <!-- Left Column: Controls (lg:col-span-4) -->
+        <section class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Panel 1: Simulation Mode & Presets -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-sm font-semibold tracking-wide text-white uppercase flex items-center gap-2">
+                        <i data-lucide="settings" class="w-4 h-4 text-slate-400"></i>
+                        Mode & Feedback
+                    </h2>
+                </div>
+
+                <!-- Presets -->
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-2">Select Architecture Preset</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setPreset('stable')" id="btn-preset-stable" class="preset-btn px-3 py-2 text-xs rounded-lg font-medium border text-left transition duration-200 bg-slate-800 hover:bg-slate-750 text-white border-brand-500/50 glow-green">
+                            <span class="block text-brand-400 font-bold">1. Highly Stable</span>
+                            <span class="text-[10px] text-slate-400">LHP Pole-Zero Cancel</span>
+                        </button>
+                        <button onclick="setPreset('under')" id="btn-preset-under" class="preset-btn px-3 py-2 text-xs rounded-lg font-medium border text-left transition duration-200 bg-slate-800 border-slate-700 hover:bg-slate-750 text-slate-300">
+                            <span class="block text-red-400 font-bold">2. Under-Comp</span>
+                            <span class="text-[10px] text-slate-400">RHP Zero Dominated</span>
+                        </button>
+                        <button onclick="setPreset('balanced')" id="btn-preset-balanced" class="preset-btn px-3 py-2 text-xs rounded-lg font-medium border text-left transition duration-200 bg-slate-800 border-slate-700 hover:bg-slate-750 text-slate-300">
+                            <span class="block text-yellow-400 font-bold">3. Balanced Classic</span>
+                            <span class="text-[10px] text-slate-400">Sweet Spot PM ≈ 60°</span>
+                        </button>
+                        <button onclick="setPreset('sandbox')" id="btn-preset-sandbox" class="preset-btn px-3 py-2 text-xs rounded-lg font-medium border text-left transition duration-200 bg-slate-800 border-slate-700 hover:bg-slate-750 text-slate-300">
+                            <span class="block text-sky-400 font-bold">🛠️ Sandbox</span>
+                            <span class="text-[10px] text-slate-400">Full Manual Control</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loop Gain Beta Control -->
+                <div class="pt-2 border-t border-slate-800/60">
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-medium text-slate-300 flex items-center gap-1.5">
+                            Closed-Loop Gain Target \(k\) (or \(1/\beta\))
+                        </label>
+                        <span id="k-val" class="font-mono text-sm font-semibold text-brand-400 bg-slate-800 px-2 py-0.5 rounded border border-slate-700">1</span>
+                    </div>
+                    <input type="range" id="param-k" min="1" max="100" step="1" value="1" oninput="updateSimulation()" class="w-full accent-brand-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                        <span>k = 1 (Buffer, \(\beta=1\))</span>
+                        <span>k = 100 (\(\beta=0.01\))</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 2: Interactive SVG Schematic Map -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-3">
+                <h3 class="text-xs font-semibold text-white tracking-wider uppercase flex items-center justify-between">
+                    <span>Interactive Circuit Topology</span>
+                    <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400 font-normal">Hover to Highlight</span>
+                </h3>
+                
+                <div class="bg-vdark border border-slate-800 rounded-lg p-2 flex justify-center items-center relative overflow-hidden">
+                    <!-- Elegant SVG Schematic of 2-Stage Compensated Op-Amp -->
+                    <svg viewBox="0 0 450 250" class="w-full h-auto text-slate-300 font-mono select-none">
+                        <!-- Background grid lines for schematic look -->
+                        <defs>
+                            <pattern id="schematic-grid" width="15" height="15" patternUnits="userSpaceOnUse">
+                                <circle cx="1" cy="1" r="1" fill="#1e293b" opacity="0.4"/>
+                            </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#schematic-grid)" />
+
+                        <!-- Input stage dotted boundary box -->
+                        <rect x="15" y="45" width="165" height="160" rx="6" fill="none" stroke="#22c55e" stroke-dasharray="3,3" opacity="0.25" id="box-stage1" class="transition-all duration-300" />
+                        <text x="25" y="60" fill="#22c55e" font-size="10" opacity="0.6" class="font-bold">Stage 1 (gm1, r1)</text>
+
+                        <!-- Second stage dotted boundary box -->
+                        <rect x="195" y="45" width="135" height="160" rx="6" fill="none" stroke="#3b82f6" stroke-dasharray="3,3" opacity="0.25" id="box-stage2" class="transition-all duration-300" />
+                        <text x="205" y="60" fill="#3b82f6" font-size="10" opacity="0.6" class="font-bold">Stage 2 (gm2, r2)</text>
+
+                        <!-- Miller branch boundary box -->
+                        <rect x="235" y="10" width="155" height="60" rx="6" fill="none" stroke="#eab308" stroke-dasharray="3,3" opacity="0.25" id="box-miller" class="transition-all duration-300" />
+                        <text x="245" y="22" fill="#eab308" font-size="9" opacity="0.6" class="font-bold">Miller Feedback (CM, RZ)</text>
+
+                        <!-- Rails -->
+                        <line x1="30" y1="30" x2="420" y2="30" stroke="#475569" stroke-width="1.5" />
+                        <text x="40" y="24" fill="#94a3b8" font-size="10">VDD</text>
+                        <line x1="30" y1="220" x2="420" y2="220" stroke="#475569" stroke-width="1.5" />
+                        <text x="40" y="234" fill="#94a3b8" font-size="10">VSS</text>
+
+                        <!-- Stage 1 Differential Input -->
+                        <path d="M 30,100 L 60,100 M 30,150 L 60,150" stroke="#64748b" stroke-width="1.5"/>
+                        <text x="20" y="96" fill="#94a3b8" font-size="9">IN-</text>
+                        <text x="20" y="146" fill="#94a3b8" font-size="9">IN+</text>
+
+                        <!-- First Stage Triangle Representation -->
+                        <polygon points="60,80 120,125 60,170" fill="#1e293b" stroke="#22c55e" stroke-width="2" class="cursor-pointer hover:fill-brand-950/30 transition-all duration-300" id="svg-g1" onmouseover="highlightGroup('stage1')" onmouseout="clearHighlight()"/>
+                        <text x="75" y="128" fill="#22c55e" font-size="11" font-weight="bold">g_m1, r1</text>
+
+                        <!-- Output node Stage 1 to gate Stage 2 -->
+                        <line x1="120" y1="125" x2="210" y2="125" stroke="#e2e8f0" stroke-width="1.5" id="node-1"/>
+                        <circle cx="160" cy="125" r="4" fill="#eab308" id="junc-node1"/>
+                        <text x="145" y="117" fill="#eab308" font-size="9">Node 1</text>
+
+                        <!-- Stage 2 Inverting CS Stage -->
+                        <polygon points="210,80 270,125 210,170" fill="#1e293b" stroke="#3b82f6" stroke-width="2" class="cursor-pointer hover:fill-blue-950/30 transition-all duration-300" id="svg-g2" onmouseover="highlightGroup('stage2')" onmouseout="clearHighlight()"/>
+                        <text x="222" y="128" fill="#3b82f6" font-size="11" font-weight="bold">-g_m2, r2</text>
+
+                        <!-- Miller Feedback Loop (bridging capacitor and resistor) -->
+                        <path d="M 160,125 L 160,25 L 260,25" fill="none" stroke="#eab308" stroke-width="1.5" />
+                        
+                        <!-- RZ Resistor SVG representation -->
+                        <rect x="260" y="17" width="25" height="15" fill="#1e293b" stroke="#eab308" stroke-width="1.5" class="cursor-pointer hover:fill-yellow-950/40 transition-all duration-300" id="svg-rz" onmouseover="highlightGroup('miller')" onmouseout="clearHighlight()"/>
+                        <text x="264" y="27" fill="#eab308" font-size="9">RZ</text>
+                        
+                        <!-- Connecting RZ to CM -->
+                        <line x1="285" y1="25" x2="310" y2="25" stroke="#eab308" stroke-width="1.5"/>
+
+                        <!-- CM Capacitor SVG representation -->
+                        <line x1="310" y1="17" x2="310" y2="33" stroke="#eab308" stroke-width="2" />
+                        <line x1="315" y1="17" x2="315" y2="33" stroke="#eab308" stroke-width="2" />
+                        <!-- Hover trigger for CM -->
+                        <rect x="305" y="15" width="15" height="20" fill="transparent" class="cursor-pointer" id="svg-cm" onmouseover="highlightGroup('miller')" onmouseout="clearHighlight()"/>
+                        <text x="323" y="28" fill="#eab308" font-size="9">CM</text>
+
+                        <!-- Completing the feedback path to Output -->
+                        <path d="M 315,25 L 360,25 L 360,125 L 270,125" fill="none" stroke="#eab308" stroke-width="1.5" />
+
+                        <!-- Load capacitor branch at output -->
+                        <line x1="360" y1="125" x2="410" y2="125" stroke="#e2e8f0" stroke-width="1.5" />
+                        <circle cx="360" cy="125" r="4" fill="#3b82f6" />
+                        <text x="366" y="117" fill="#3b82f6" font-size="10" font-weight="bold">Vout</text>
+
+                        <line x1="390" y1="125" x2="390" y2="155" stroke="#a8a29e" stroke-width="1.5" />
+                        <!-- CL Capacitor SVG representation -->
+                        <line x1="382" y1="155" x2="398" y2="155" stroke="#a8a29e" stroke-width="2" />
+                        <line x1="382" y1="159" x2="398" y2="159" stroke="#a8a29e" stroke-width="2" />
+                        <rect x="380" y="150" width="20" height="15" fill="transparent" class="cursor-pointer" id="svg-cl" onmouseover="highlightGroup('load')" onmouseout="clearHighlight()"/>
+                        <text x="405" y="162" fill="#a8a29e" font-size="9">CL</text>
+                        <!-- Ground symbol at CL end -->
+                        <line x1="390" y1="159" x2="390" y2="175" stroke="#a8a29e" stroke-width="1.5" />
+                        <line x1="380" y1="175" x2="400" y2="175" stroke="#a8a29e" stroke-width="1.5" />
+                        <line x1="384" y1="179" x2="396" y2="179" stroke="#a8a29e" stroke-width="1.5" />
+                        <line x1="388" y1="183" x2="392" y2="183" stroke="#a8a29e" stroke-width="1.5" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Panel 3: Sandbox Physical Parameters (Conditionally Editable) -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-sm font-semibold tracking-wide text-white uppercase flex items-center gap-2">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-slate-400"></i>
+                        Sandbox Parameters
+                    </h2>
+                    <span id="sandbox-locked-badge" class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono">
+                        LOCKED PRESET
+                    </span>
+                </div>
+
+                <div id="sandbox-controls" class="flex flex-col gap-4 opacity-50 pointer-events-none transition-opacity duration-300">
+                    
+                    <!-- Stage 1 Controls Group -->
+                    <div id="group-stage1" class="p-3 bg-slate-900/40 rounded-lg border border-transparent transition-all duration-300">
+                        <div class="text-xs font-bold text-brand-400 mb-2 border-b border-brand-500/20 pb-1">Stage 1: Transconductance & Impedance</div>
+                        
+                        <!-- gm1 -->
+                        <div class="mb-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">First-Stage transconductance (\(g_{m1}\))</label>
+                                <span id="gm1-val" class="font-mono text-xs font-semibold text-white">150 μA/V</span>
+                            </div>
+                            <input type="range" id="param-gm1" min="10" max="1000" step="5" value="150" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- r1 -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">First-Stage output resistance (\(r_1\))</label>
+                                <span id="r1-val" class="font-mono text-xs font-semibold text-white">800 kΩ</span>
+                            </div>
+                            <input type="range" id="param-r1" min="10" max="5000" step="10" value="800" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 Controls Group -->
+                    <div id="group-stage2" class="p-3 bg-slate-900/40 rounded-lg border border-transparent transition-all duration-300">
+                        <div class="text-xs font-bold text-blue-400 mb-2 border-b border-blue-500/20 pb-1">Stage 2: Transconductance & Impedance</div>
+
+                        <!-- gm2 -->
+                        <div class="mb-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">Second-Stage transconductance (\(g_{m2}\))</label>
+                                <span id="gm2-val" class="font-mono text-xs font-semibold text-white">1.2 mA/V</span>
+                            </div>
+                            <input type="range" id="param-gm2" min="100" max="10000" step="50" value="1200" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- r2 -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">Second-Stage output resistance (\(r_2\))</label>
+                                <span id="r2-val" class="font-mono text-xs font-semibold text-white">80 kΩ</span>
+                            </div>
+                            <input type="range" id="param-r2" min="5" max="1000" step="5" value="80" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Miller Feedback Network Controls Group -->
+                    <div id="group-miller" class="p-3 bg-slate-900/40 rounded-lg border border-transparent transition-all duration-300">
+                        <div class="text-xs font-bold text-yellow-400 mb-2 border-b border-yellow-500/20 pb-1">Compensation Path</div>
+
+                        <!-- CM -->
+                        <div class="mb-3">
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">Miller Feedback Capacitor (\(C_M\))</label>
+                                <span id="cm-val" class="font-mono text-xs font-semibold text-white">3.5 pF</span>
+                            </div>
+                            <input type="range" id="param-cm" min="0.1" max="15" step="0.1" value="3.5" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+
+                        <!-- RZ -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">Nulling Resistor (\(R_Z\))</label>
+                                <span id="rz-val" class="font-mono text-xs font-semibold text-white">833 Ω</span>
+                            </div>
+                            <input type="range" id="param-rz" min="0" max="15000" step="25" value="833" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- External Load Controls Group -->
+                    <div id="group-load" class="p-3 bg-slate-900/40 rounded-lg border border-transparent transition-all duration-300">
+                        <div class="text-xs font-bold text-stone-400 mb-2 border-b border-stone-500/20 pb-1">Output Load</div>
+
+                        <!-- CL -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[11px] text-slate-400">External Load Capacitance (\(C_L\))</label>
+                                <span id="cl-val" class="font-mono text-xs font-semibold text-white">10.0 pF</span>
+                            </div>
+                            <input type="range" id="param-cl" min="0.1" max="50" step="0.5" value="10.0" oninput="updateSimulation()" class="w-full accent-brand-500 h-1 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Column: Visualizations & Metrics Dashboard (lg:col-span-8) -->
+        <section class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Real-Time Metrics & Performance Dashboard -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl">
+                
+                <!-- Open Loop DC Gain -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-3 rounded-lg flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Open Loop Gain \(A_0\)</span>
+                    <div class="my-2">
+                        <span id="metric-a0-db" class="text-xl font-bold text-white font-mono">81.2</span>
+                        <span class="text-xs text-slate-400 ml-1">dB</span>
+                    </div>
+                    <span id="metric-a0-linear" class="text-[10px] text-slate-500 font-mono">11,480 V/V</span>
+                </div>
+
+                <!-- Dominant Pole -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-3 rounded-lg flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Dominant Pole \(f_{p1}\)</span>
+                    <div class="my-2">
+                        <span id="metric-fp1" class="text-xl font-bold text-white font-mono">592</span>
+                        <span id="metric-fp1-unit" class="text-xs text-slate-400 ml-1">Hz</span>
+                    </div>
+                    <span id="metric-p1-rad" class="text-[10px] text-slate-500 font-mono">3,720 rad/s</span>
+                </div>
+
+                <!-- Non-Dominant Pole -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-3 rounded-lg flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Second Pole \(f_{p2}\)</span>
+                    <div class="my-2">
+                        <span id="metric-fp2" class="text-xl font-bold text-white font-mono">19.1</span>
+                        <span id="metric-fp2-unit" class="text-xs text-slate-400 ml-1">MHz</span>
+                    </div>
+                    <span id="metric-p2-rad" class="text-[10px] text-slate-500 font-mono">1.20e8 rad/s</span>
+                </div>
+
+                <!-- Position of Zero -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-3 rounded-lg flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Zero Location \(f_z\)</span>
+                    <div class="my-2 flex items-baseline">
+                        <span id="metric-fz" class="text-xl font-bold text-white font-mono">54.5</span>
+                        <span id="metric-fz-unit" class="text-xs text-slate-400 ml-1">MHz</span>
+                    </div>
+                    <span id="metric-fz-type" class="text-[10px] px-1.5 py-0.5 rounded font-bold uppercase font-mono w-max">
+                        RHP (Lag)
+                    </span>
+                </div>
+
+                <!-- Crossover Frequency -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-3 rounded-lg sm:col-span-2 flex flex-col justify-between">
+                    <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Loop-Gain Crossover \(f_{c}\)</span>
+                    <div class="my-2">
+                        <span id="metric-fc" class="text-2xl font-black text-white font-mono">6.82</span>
+                        <span id="metric-fc-unit" class="text-sm text-slate-400 ml-1">MHz</span>
+                    </div>
+                    <span id="metric-fc-comment" class="text-[10px] text-slate-400 font-mono">Unity loop gain frequency (\(\beta \cdot A = 0\text{ dB}\))</span>
+                </div>
+
+                <!-- Dynamic Stability Indicator & PM -->
+                <div class="bg-slate-900/50 border border-slate-800/80 p-4 rounded-lg sm:col-span-2 flex items-center justify-between gap-4">
+                    <div class="flex-1">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold tracking-wider">Phase Margin (PM)</span>
+                        <div class="my-1 flex items-baseline">
+                            <span id="metric-pm" class="text-3xl font-black text-white font-mono">60</span>
+                            <span class="text-base text-slate-400 ml-1">°</span>
+                        </div>
+                        <span id="metric-pm-desc" class="text-[10px] text-slate-400 font-mono">Optimal step response, minimal overshoot.</span>
+                    </div>
+                    <div id="stability-badge-container" class="flex flex-col items-center justify-center p-3 rounded-lg border h-full min-w-[120px]">
+                        <span id="stability-status-text" class="text-xs font-black uppercase tracking-wider mb-1">STABLE</span>
+                        <span id="stability-pm-feedback" class="text-[10px] text-center font-semibold text-slate-400 leading-tight">60° is Sweet Spot</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Stacked Bode Plots Card -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-sm font-semibold tracking-wide text-white uppercase flex items-center gap-2">
+                        <i data-lucide="line-chart" class="w-4 h-4 text-slate-400"></i>
+                        Frequency Domain Bode Characterization
+                    </h2>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-amber-500 inline-block"></span> Open-Loop \(A\)</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-emerald-500 inline-block"></span> Loop-Gain \(\beta A\)</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-blue-500 inline-block"></span> Closed-Loop \(A_{CL}\)</span>
+                    </div>
+                </div>
+
+                <!-- Dual Canvas Layout -->
+                <div class="flex flex-col gap-2">
+                    
+                    <!-- Top Chart: Magnitude -->
+                    <div class="relative bg-vdark rounded-lg p-2 border border-slate-800/80" style="height: 250px;">
+                        <canvas id="chart-magnitude"></canvas>
+                        <!-- Floating Y Axis Label -->
+                        <div class="absolute left-2 top-2 text-[10px] text-slate-500 font-mono tracking-wider rotate-90 origin-top-left translate-y-12">MAGNITUDE (dB)</div>
+                    </div>
+
+                    <!-- Bottom Chart: Phase -->
+                    <div class="relative bg-vdark rounded-lg p-2 border border-slate-800/80" style="height: 210px;">
+                        <canvas id="chart-phase"></canvas>
+                        <!-- Floating Y Axis Label -->
+                        <div class="absolute left-2 top-2 text-[10px] text-slate-500 font-mono tracking-wider rotate-90 origin-top-left translate-y-12">PHASE (DEG)</div>
+                    </div>
+
+                </div>
+
+                <!-- Slew Rate Extension Bonus Metric -->
+                <div class="flex flex-wrap items-center justify-between bg-slate-900/30 border border-slate-800 p-3 rounded-lg text-xs gap-3 font-mono">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="zap" class="w-4 h-4 text-amber-500"></i>
+                        <span>Estimated Op-Amp Slew Rate:</span>
+                        <span id="metric-sr" class="font-bold text-white">42.8 V/μs</span>
+                    </div>
+                    <div class="text-slate-500 text-[10px]">
+                        Calculated as \(SR \approx \frac{I_{tail}}{C_M}\) with standard tail bias (\(I_{tail} = 150\,\mu\text{A}\))
+                    </div>
+                </div>
+            </div>
+
+            <!-- NEW INTEGRATED PANEL: Analytical Time Domain Step Response -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl flex flex-col gap-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                    <h2 class="text-sm font-semibold tracking-wide text-white uppercase flex items-center gap-2">
+                        <i data-lucide="trending-up" class="w-4 h-4 text-sky-400"></i>
+                        Time-Domain Transient Step Response (Analytical)
+                    </h2>
+                    <div class="flex items-center gap-3 text-xs">
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-slate-500 inline-block border-t border-dashed"></span> Target \(V_{\text{target}}\)</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-0.5 bg-sky-400 inline-block"></span> Step Response \(V_{\text{out}}(t)\)</span>
+                    </div>
+                </div>
+
+                <!-- Step Response Chart Canvas -->
+                <div class="relative bg-vdark rounded-lg p-2 border border-slate-800/80" style="height: 240px;">
+                    <canvas id="chart-step"></canvas>
+                    <!-- Floating Y Axis Label -->
+                    <div class="absolute left-2 top-2 text-[10px] text-slate-500 font-mono tracking-wider rotate-90 origin-top-left translate-y-12">VOLTAGE (V/V)</div>
+                </div>
+
+                <!-- Transient Key Performance Metrics -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-900/30 border border-slate-800 p-3 rounded-lg text-xs font-mono">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 uppercase">Damping Ratio (\(\zeta\))</span>
+                        <span id="metric-zeta" class="text-sm font-bold text-white">0.707</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 uppercase">Peak Overshoot</span>
+                        <span id="metric-overshoot" class="text-sm font-bold text-sky-400">4.3%</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 uppercase">10-90% Rise Time (\(t_r\))</span>
+                        <span id="metric-tr" class="text-sm font-bold text-emerald-400">32.4 ns</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 uppercase">2% Settling Time (\(t_s\))</span>
+                        <span id="metric-ts" class="text-sm font-bold text-amber-400">112.5 ns</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel 4: Comprehensive Educational Insights Section (Collapsible) -->
+            <div class="bg-vcard border border-slate-800 rounded-xl p-5 shadow-xl">
+                <button onclick="toggleTheory()" class="w-full flex items-center justify-between text-left text-white focus:outline-none">
+                    <h2 class="text-sm font-semibold tracking-wide uppercase flex items-center gap-2">
+                        <i data-lucide="book-open" class="w-4 h-4 text-brand-400"></i>
+                        Theory & Compensation Insights
+                    </h2>
+                    <i id="theory-chevron" data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transition-transform duration-300"></i>
+                </button>
+
+                <div id="theory-content" class="mt-4 pt-4 border-t border-slate-800/60 flex flex-col gap-4 text-slate-300 text-sm leading-relaxed max-h-0 overflow-hidden transition-all duration-500">
+                    <div>
+                        <h3 class="text-xs font-bold text-brand-400 mb-1 uppercase tracking-wider font-mono">1. Why Single-Stage Op-Amps fall short</h3>
+                        <p>
+                            In high-precision applications, we need exceptional open-loop gain (\(A_0 > 80\text{ dB}\)). A single-stage amplifier forces you to choose between gain and output voltage swing. Stacking (cascoding) multiple transistors vertically boosts output impedance—and thus gain—but heavily reduces headroom. A **two-stage CMOS op-amp** resolves this by separating the tasks: Stage 1 serves as the specialized high-gain block, while Stage 2 provides maximum dynamic voltage swing.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-blue-400 mb-1 uppercase tracking-wider font-mono">2. The Stability Penalty: Two-Pole Conflict</h3>
+                        <p>
+                            While powerful, the two-stage configuration is inherently unstable under negative feedback. The internal output node of the first stage and the physical output of the second stage are both high-impedance nodes. This creates two distinct low-frequency poles, \(p_1\) and \(p_2\), that lie close together in frequency. According to feedback theory, each pole contributes up to \(-90^\circ\) of phase shift. When both poles trigger roll-off, the total phase lag reaches \(-180^\circ\) while the loop gain remains above \(0\text{ dB}\). Connecting this network in a feedback loop turns negative feedback into destructive **positive feedback**, resulting in immediate instability and physical oscillation.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-yellow-400 mb-1 uppercase tracking-wider font-mono">3. Miller Compensation & Pole-Splitting</h3>
+                        <p>
+                            To prevent oscillation, we perform **pole-splitting** by introducing a compensation capacitor (\(C_M\)) bridging the output back to the intermediate node. Because of the Miller effect, the effective capacitance at the first-stage output node is multiplied by the gain of the second stage:
+                            $$C_{\text{eff}} \approx C_M (1 + g_{m2}r_2)$$
+                            This pushes the dominant pole \(p_1\) to extremely low frequencies (typically a few Hz), rolling off loop gain safely at \(-20\text{ dB/decade}\). Concurrently, \(C_M\) acts as a low-impedance path at high frequencies, pushing the non-dominant pole \(p_2\) further out to high frequencies:
+                            $$p_1 \approx \frac{1}{g_{m2} r_1 r_2 C_M} \quad \text{and} \quad p_2 \approx \frac{g_{m2}}{C_L}$$
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-stone-300 mb-1 uppercase tracking-wider font-mono">4. Neutralizing the Feedforward Zero</h3>
+                        <p>
+                            The feedback path through \(C_M\) is bidirectional. In addition to feedback, high-frequency signals feed *forward* directly through \(C_M\), bypassing the inverting transconductance path of the second stage. This dual-path conflict creates a **Right-Half-Plane (RHP) zero** located at:
+                            $$z_{\text{RHP}} = +\frac{g_{m2}}{C_M}$$
+                            This zero is a stability nightmare because it maintains a high gain slope (adding \(+20\text{ dB/decade}\)) while shedding massive phase lag (introducing up to \(-90^\circ\) shift), degrading Phase Margin rapidly. 
+                            To combat this, we place a **nulling resistor (\(R_Z\))** in series with \(C_M\). This shifts the zero location to:
+                            $$z_{\text{new}} = \frac{1}{C_M \left( \frac{1}{g_{m2}} - R_Z \right)}$$
+                            - By setting **\(R_Z = 1/g_{m2}\)**, the denominator becomes zero, pushing the RHP zero out to **infinity** (completely canceled).
+                            - By setting **\(R_Z > 1/g_{m2}\)**, we flip the zero into the **Left-Half-Plane (LHP)**, turning it into a phase booster that adds \(+90^\circ\) of phase shift. Sizing \(R_Z = \frac{1}{g_{m2}} \left( 1 + \frac{C_L}{C_M} \right)\) aligns this LHP zero perfectly on top of \(p_2\), performing **pole-zero cancellation** and yielding unmatched stability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Interactive JS Core Engine -->
+    <script>
+        // Global State & Presets Configuration
+        let activePreset = 'stable';
+        
+        // Typical structural parameters
+        const physicalParams = {
+            gm1: 150,     // uS (uA/V)
+            r1: 1000,     // kOhm
+            gm2: 1200,    // uS (uA/V)
+            r2: 80,       // kOhm
+            cm: 6.0,      // pF
+            rz: 1850,     // Ohm
+            cl: 10.0,     // pF
+            k: 1          // feedback factor inverse (beta = 1/k)
+        };
+
+        // Presets Values definition
+        const presets = {
+            stable: {
+                gm1: 150, r1: 1000, gm2: 1200, r2: 80, cm: 6.0, cl: 10.0, rz: 1850, k: 1,
+                desc: "High Stability with LHP Pole-Zero cancellation. Phase Margin is optimal."
+            },
+            under: {
+                gm1: 250, r1: 800, gm2: 800, r2: 120, cm: 0.8, cl: 35.0, rz: 0, k: 1,
+                desc: "Under-Compensated design. High-frequency RHP zero drops phase completely before crossover."
+            },
+            balanced: {
+                gm1: 150, r1: 800, gm2: 1200, r2: 80, cm: 3.5, cl: 10.0, rz: 833, k: 1,
+                desc: "Balanced Classic design with RZ = 1/gm2 to perfectly cancel RHP zero."
+            },
+            sandbox: {
+                // copy from current values when entering manual sandbox
+            }
+        };
+
+        // UI references
+        const sliders = {
+            gm1: document.getElementById('param-gm1'),
+            r1: document.getElementById('param-r1'),
+            gm2: document.getElementById('param-gm2'),
+            r2: document.getElementById('param-r2'),
+            cm: document.getElementById('param-cm'),
+            rz: document.getElementById('param-rz'),
+            cl: document.getElementById('param-cl'),
+            k: document.getElementById('param-k')
+        };
+
+        // Chart.js references
+        let chartMag = null;
+        let chartPh = null;
+        let chartStep = null;
+
+        // On Page Load
+        window.onload = function() {
+            // Render Math Equations safely now that body is fully parsed
+            if (typeof renderMathInElement === 'function') {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        {left: '$$', right: '$$', display: true},
+                        {left: '$', right: '$', display: false},
+                        {left: '\\(', right: '\\)', display: false},
+                        {left: '\\[', right: '\\]', display: true}
+                    ],
+                    throwOnError: false
+                });
+            }
+
+            lucide.createIcons();
+            setPreset('stable'); // Starts with highly stable mode
+            initializeCharts();
+            updateSimulation();
+        }
+
+        // Toggles Theory section collapse
+        function toggleTheory() {
+            const content = document.getElementById('theory-content');
+            const chevron = document.getElementById('theory-chevron');
+            if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+                content.style.maxHeight = '0px';
+                chevron.style.transform = 'rotate(0deg)';
+            } else {
+                content.style.maxHeight = '1000px';
+                chevron.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // Highlight visual blocks on schematic hover
+        function highlightGroup(groupName) {
+            // Remove previous highlights
+            document.getElementById('box-stage1').style.strokeOpacity = '0.25';
+            document.getElementById('box-stage2').style.strokeOpacity = '0.25';
+            document.getElementById('box-miller').style.strokeOpacity = '0.25';
+            document.getElementById('box-stage1').style.strokeWidth = '1';
+            document.getElementById('box-stage2').style.strokeWidth = '1';
+            document.getElementById('box-miller').style.strokeWidth = '1';
+            
+            document.getElementById('group-stage1').style.borderColor = 'transparent';
+            document.getElementById('group-stage2').style.borderColor = 'transparent';
+            document.getElementById('group-miller').style.borderColor = 'transparent';
+
+            // Set new highlight
+            if (groupName === 'stage1') {
+                const box = document.getElementById('box-stage1');
+                box.style.strokeOpacity = '1';
+                box.style.strokeWidth = '2';
+                document.getElementById('group-stage1').style.borderColor = '#22c55e';
+            } else if (groupName === 'stage2') {
+                const box = document.getElementById('box-stage2');
+                box.style.strokeOpacity = '1';
+                box.style.strokeWidth = '2';
+                document.getElementById('group-stage2').style.borderColor = '#3b82f6';
+            } else if (groupName === 'miller') {
+                const box = document.getElementById('box-miller');
+                box.style.strokeOpacity = '1';
+                box.style.strokeWidth = '2';
+                document.getElementById('group-miller').style.borderColor = '#eab308';
+            }
+        }
+
+        function clearHighlight() {
+            document.getElementById('box-stage1').style.strokeOpacity = '0.25';
+            document.getElementById('box-stage2').style.strokeOpacity = '0.25';
+            document.getElementById('box-miller').style.strokeOpacity = '0.25';
+            document.getElementById('box-stage1').style.strokeWidth = '1';
+            document.getElementById('box-stage2').style.strokeWidth = '1';
+            document.getElementById('box-miller').style.strokeWidth = '1';
+
+            document.getElementById('group-stage1').style.borderColor = 'transparent';
+            document.getElementById('group-stage2').style.borderColor = 'transparent';
+            document.getElementById('group-miller').style.borderColor = 'transparent';
+        }
+
+        // Handle preset select
+        function setPreset(mode) {
+            activePreset = mode;
+            
+            // Toggle active visual states on button classes
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('border-brand-500/50', 'glow-green', 'border-red-500/50', 'glow-red', 'border-yellow-500/50', 'glow-yellow', 'border-sky-500/50', 'glow-blue', 'text-white');
+                btn.classList.add('border-slate-700', 'text-slate-300');
+            });
+
+            const activeBtn = document.getElementById(`btn-preset-${mode}`);
+            activeBtn.classList.remove('border-slate-700');
+            
+            if (mode === 'stable') {
+                activeBtn.classList.add('border-brand-500/50', 'glow-green', 'text-white');
+            } else if (mode === 'under') {
+                activeBtn.classList.add('border-red-500/50', 'glow-red', 'text-white');
+            } else if (mode === 'balanced') {
+                activeBtn.classList.add('border-yellow-500/50', 'glow-yellow', 'text-white');
+            } else if (mode === 'sandbox') {
+                activeBtn.classList.add('border-sky-500/50', 'glow-blue', 'text-white');
+            }
+
+            // Lock or unlock sandbox controls opacity
+            const ctrlContainer = document.getElementById('sandbox-controls');
+            const lockBadge = document.getElementById('sandbox-locked-badge');
+            if (mode === 'sandbox') {
+                ctrlContainer.classList.remove('opacity-50', 'pointer-events-none');
+                lockBadge.textContent = "SANDBOX ENGAGED";
+                lockBadge.className = "text-[10px] bg-sky-950 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded font-mono";
+            } else {
+                ctrlContainer.classList.add('opacity-50', 'pointer-events-none');
+                lockBadge.textContent = "LOCKED PRESET";
+                lockBadge.className = "text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-mono";
+                
+                // Copy preset values to sliders
+                physicalParams.gm1 = presets[mode].gm1;
+                physicalParams.r1 = presets[mode].r1;
+                physicalParams.gm2 = presets[mode].gm2;
+                physicalParams.r2 = presets[mode].r2;
+                physicalParams.cm = presets[mode].cm;
+                physicalParams.rz = presets[mode].rz;
+                physicalParams.cl = presets[mode].cl;
+                physicalParams.k = presets[mode].k;
+
+                // Update sliders visual positioning
+                sliders.gm1.value = physicalParams.gm1;
+                sliders.r1.value = physicalParams.r1;
+                sliders.gm2.value = physicalParams.gm2;
+                sliders.r2.value = physicalParams.r2;
+                sliders.cm.value = physicalParams.cm;
+                sliders.rz.value = physicalParams.rz;
+                sliders.cl.value = physicalParams.cl;
+                sliders.k.value = physicalParams.k;
+            }
+
+            updateSimulation();
+        }
+
+        // Compute open loop transfer function parameters
+        function calculateTransferFunctionParams() {
+            // Fetch correct variables based on mode
+            const isSandbox = activePreset === 'sandbox';
+            const gm1 = (isSandbox ? parseFloat(sliders.gm1.value) : physicalParams.gm1) * 1e-6; // Siemens
+            const r1 = (isSandbox ? parseFloat(sliders.r1.value) : physicalParams.r1) * 1e3;    // Ohms
+            const gm2 = (isSandbox ? parseFloat(sliders.gm2.value) : physicalParams.gm2) * 1e-6; // Siemens
+            const r2 = (isSandbox ? parseFloat(sliders.r2.value) : physicalParams.r2) * 1e3;    // Ohms
+            const CM = (isSandbox ? parseFloat(sliders.cm.value) : physicalParams.cm) * 1e-12;   // Farads
+            const RZ = (isSandbox ? parseFloat(sliders.rz.value) : physicalParams.rz);          // Ohms
+            const CL = (isSandbox ? parseFloat(sliders.cl.value) : physicalParams.cl) * 1e-12;   // Farads
+            const k = parseFloat(sliders.k.value);                                              // Closed-loop target gain (always active!)
+
+            // Update physical value displays next to slider
+            document.getElementById('gm1-val').textContent = `${(gm1 * 1e6).toFixed(0)} μA/V`;
+            document.getElementById('r1-val').textContent = r1 >= 1e6 ? `${(r1/1e6).toFixed(1)} MΩ` : `${(r1/1e3).toFixed(0)} kΩ`;
+            document.getElementById('gm2-val').textContent = `${(gm2 * 1e3).toFixed(1)} mA/V`;
+            document.getElementById('r2-val').textContent = `${(r2/1e3).toFixed(0)} kΩ`;
+            document.getElementById('cm-val').textContent = `${(CM * 1e12).toFixed(1)} pF`;
+            document.getElementById('rz-val').textContent = `${RZ.toFixed(0)} Ω`;
+            document.getElementById('cl-val').textContent = `${(CL * 1e12).toFixed(1)} pF`;
+            document.getElementById('k-val').textContent = k;
+
+            // DC Open-Loop Gain
+            const A0 = gm1 * gm2 * r1 * r2;
+
+            // Dominant pole: p1 approx 1 / (gm2 * r1 * r2 * CM)
+            const p1 = 1.0 / (gm2 * r1 * r2 * CM); // rad/s
+
+            // Non-dominant pole: p2 approx gm2 / CL
+            const p2 = gm2 / CL; // rad/s
+
+            // Zero: z1 = 1 / (CM * (1/gm2 - RZ))
+            let z1;
+            const diff = (1.0 / gm2) - RZ;
+            if (Math.abs(diff) < 1e-18) {
+                z1 = Infinity; // Perfect cancellation
+            } else {
+                z1 = 1.0 / (CM * diff);
+            }
+
+            return { A0, p1, p2, z1, beta: 1.0 / k, k, CM };
+        }
+
+        // Loop Gain Magnitude calculation for crossover solver
+        function getLoopGainMagnitude(f, A0, p1, p2, z1, beta) {
+            const w = 2.0 * Math.PI * f;
+            const num = Math.sqrt(1.0 + (z1 === Infinity ? 0.0 : Math.pow(w / z1, 2)));
+            const den = Math.sqrt(1.0 + Math.pow(w / p1, 2)) * Math.sqrt(1.0 + Math.pow(w / p2, 2));
+            return A0 * beta * (num / den);
+        }
+
+        // Compute Phase response
+        function getPhaseAtFrequency(f, p1, p2, z1) {
+            const w = 2.0 * Math.PI * f;
+            let phase = 0.0;
+            
+            // Dominant Pole
+            phase -= Math.atan(w / p1);
+            
+            // Second Pole
+            phase -= Math.atan(w / p2);
+            
+            // Series zero
+            if (z1 !== Infinity) {
+                if (z1 > 0) {
+                    // RHP Zero adds magnitude but subtracts phase
+                    phase -= Math.atan(w / Math.abs(z1));
+                } else {
+                    // LHP Zero adds phase
+                    phase += Math.atan(w / Math.abs(z1));
+                }
+            }
+            
+            return phase * (180.0 / Math.PI); // degrees
+        }
+
+        // Binary Search Crossover Frequency Solver
+        function getCrossoverFrequency(A0, p1, p2, z1, beta) {
+            let low = 1.0;
+            let high = 1e11;
+            let tolerance = 1e-5;
+            let fc = 1.0;
+            
+            // Bounds check
+            if (getLoopGainMagnitude(1.0, A0, p1, p2, z1, beta) < 1.0) {
+                return 0.0; // Already below crossover
+            }
+            if (getLoopGainMagnitude(1e11, A0, p1, p2, z1, beta) > 1.0) {
+                return 1e11;
+            }
+
+            for (let i = 0; i < 50; i++) {
+                let mid = Math.exp((Math.log(low) + Math.log(high)) / 2.0);
+                let mag = getLoopGainMagnitude(mid, A0, p1, p2, z1, beta);
+                
+                if (Math.abs(20.0 * Math.log10(mag)) < tolerance) {
+                    fc = mid;
+                    break;
+                }
+                
+                if (mag > 1.0) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+                fc = mid;
+            }
+            return fc;
+        }
+
+        // Analytical Step Response Inversion Engine
+        function calculateAnalyticalStepResponse(A0, p1, p2, z1, beta) {
+            // Closed-loop transfer function formulation:
+            // A_CL(s) = A(s) / [1 + beta*A(s)] = (b0 + b1*s) / (s^2 + a1*s + a0)
+            const a0 = p1 * p2 * (1.0 + beta * A0);
+            const b0 = A0 * p1 * p2;
+            const Kdc = b0 / a0; // Closed-loop DC gain
+            
+            let b1 = 0.0;
+            if (z1 !== Infinity) {
+                b1 = -(A0 * p1 * p2) / z1;
+            }
+            
+            let a1 = p1 + p2;
+            if (z1 !== Infinity) {
+                a1 -= (beta * A0 * p1 * p2) / z1;
+            }
+
+            const wn = Math.sqrt(Math.max(1e-12, a0));
+            const zeta = a1 / (2.0 * wn);
+            const disc = a1 * a1 - 4.0 * a0;
+
+            // Determine optimal display time window tMax
+            let tMax;
+            if (disc < 0) { // Underdamped or unstable complex poles
+                const alpha = a1 / 2.0;
+                const wd = Math.sqrt(4.0 * a0 - a1 * a1) / 2.0;
+                const Td = (2.0 * Math.PI) / wd;
+                if (alpha > 0) {
+                    tMax = Math.max(6.0 / alpha, 4.0 * Td);
+                } else {
+                    // System is unstable: show 5 oscillation periods
+                    tMax = 5.0 * Td;
+                }
+            } else if (disc > 0) { // Overdamped real poles
+                const r1 = (-a1 + Math.sqrt(disc)) / 2.0;
+                const r2 = (-a1 - Math.sqrt(disc)) / 2.0;
+                const slowest = Math.min(Math.abs(r1), Math.abs(r2));
+                tMax = 6.0 / (slowest || 1e-6);
+            } else { // Critically damped
+                const alpha = a1 / 2.0;
+                tMax = 6.0 / (alpha || 1e-6);
+            }
+
+            // Generate analytical time series points
+            const numPoints = 200;
+            const stepPoints = [];
+            const targetPoints = [];
+
+            let peakVal = 0;
+            let peakTime = 0;
+            let t10 = null;
+            let t90 = null;
+
+            for (let i = 0; i < numPoints; i++) {
+                const t = (i / (numPoints - 1)) * tMax;
+                let y = 0.0;
+
+                if (disc < 0) { // Underdamped / Complex poles solution
+                    const alpha = a1 / 2.0;
+                    const wd = Math.sqrt(4.0 * a0 - a1 * a1) / 2.0;
+                    const expTerm = Math.exp(-alpha * t);
+                    // Prevent numerical overflow if unstable
+                    const safeExp = Math.min(expTerm, 100.0);
+                    
+                    const cosTerm = Math.cos(wd * t);
+                    const sinTerm = Math.sin(wd * t);
+                    const sinCoeff = (alpha - (b1 / Kdc)) / wd;
+                    
+                    y = Kdc * (1.0 - safeExp * (cosTerm + sinCoeff * sinTerm));
+                } else if (disc > 0) { // Overdamped real distinct poles solution
+                    const r1 = (-a1 + Math.sqrt(disc)) / 2.0;
+                    const r2 = (-a1 - Math.sqrt(disc)) / 2.0;
+                    
+                    const B = (b0 + b1 * r1) / (r1 * (r1 - r2));
+                    const C = (b0 + b1 * r2) / (r2 * (r2 - r1));
+                    
+                    y = Kdc + B * Math.exp(r1 * t) + C * Math.exp(r2 * t);
+                } else { // Critically damped repeated real poles solution
+                    const alpha = a1 / 2.0;
+                    const B = -Kdc;
+                    const C = b1 - Kdc * alpha;
+                    
+                    y = Kdc + B * Math.exp(-alpha * t) + C * t * Math.exp(-alpha * t);
+                }
+
+                if (isNaN(y) || !isFinite(y)) y = Kdc * 5.0;
+
+                stepPoints.push({ x: t, y: y });
+                targetPoints.push({ x: t, y: Kdc });
+
+                if (y > peakVal) {
+                    peakVal = y;
+                    peakTime = t;
+                }
+
+                if (t10 === null && y >= 0.1 * Kdc) t10 = t;
+                if (t90 === null && y >= 0.9 * Kdc) t90 = t;
+            }
+
+            // Rise time (10% to 90%)
+            const tr = (t10 !== null && t90 !== null && t90 > t10) ? (t90 - t10) : null;
+            
+            // Peak Overshoot percentage
+            let overshoot = 0.0;
+            if (Kdc > 0 && peakVal > Kdc) {
+                overshoot = ((peakVal - Kdc) / Kdc) * 100.0;
+            }
+
+            // 2% Settling time calculation
+            let ts = null;
+            if (a1 > 0) { // Only valid if stable
+                for (let i = numPoints - 1; i >= 0; i--) {
+                    if (Math.abs(stepPoints[i].y - Kdc) / Math.abs(Kdc) > 0.02) {
+                        ts = stepPoints[i].x;
+                        break;
+                    }
+                }
+            }
+
+            return {
+                stepPoints,
+                targetPoints,
+                tMax,
+                Kdc,
+                zeta,
+                wn,
+                overshoot,
+                tr,
+                ts,
+                isStable: a1 > 0
+            };
+        }
+
+        // Main core math execution loop
+        function updateSimulation() {
+            const params = calculateTransferFunctionParams();
+            const { A0, p1, p2, z1, beta, k, CM } = params;
+
+            // Frequency grid log10 representation points creation
+            const frequencies = [];
+            const openLoopMag = [];
+            const loopGainMag = [];
+            const closedLoopMag = [];
+            const openLoopPh = [];
+            const loopGainPh = [];
+            const closedLoopPh = [];
+
+            // Generate 150 log-spaced points from 1 Hz to 10 GHz
+            const points = 150;
+            const minFreq = 1.0;
+            const maxFreq = 1e10;
+            const logMin = Math.log10(minFreq);
+            const logMax = Math.log10(maxFreq);
+
+            for (let i = 0; i < points; i++) {
+                const logF = logMin + (i / (points - 1)) * (logMax - logMin);
+                const f = Math.pow(10, logF);
+                frequencies.push(f);
+
+                const w = 2 * Math.PI * f;
+
+                // Analytical Complex Transfer Function
+                // H(s) = A0 * (1 - s/z1) / [(1 + s/p1)*(1 + s/p2)]
+                
+                // Numerator: N(s) = A0 * (1 - s/z1)
+                const Nr = A0;
+                const Ni = z1 === Infinity ? 0.0 : -A0 * (w / z1);
+
+                // Denominator: D(s) = (1 + s/p1)*(1 + s/p2)
+                const Dr = 1.0 - (w * w) / (p1 * p2);
+                const Di = w * (1.0 / p1 + 1.0 / p2);
+
+                // Forward Open-Loop Complex Gain: A(s) = N(s) / D(s)
+                const denSquared = Dr * Dr + Di * Di;
+                const Ar = (Nr * Dr + Ni * Di) / denSquared;
+                const Ai = (Ni * Dr - Nr * Di) / denSquared;
+
+                // Magnitude & Phase Open Loop
+                const A_mag = Math.sqrt(Ar * Ar + Ai * Ai);
+                openLoopMag.push({ x: f, y: 20.0 * Math.log10(A_mag) });
+                
+                const A_phase = Math.atan2(Ai, Ar) * (180.0 / Math.PI);
+                openLoopPh.push({ x: f, y: A_phase });
+
+                // Loop Gain: T(s) = beta * A(s)
+                const T_mag = A_mag * beta;
+                loopGainMag.push({ x: f, y: 20.0 * Math.log10(T_mag) });
+                loopGainPh.push({ x: f, y: A_phase }); // Loop phase shift profile matches Open-Loop directly
+
+                // Closed Loop Complex Gain: A_CL(s) = A(s) / (1 + beta * A(s))
+                const Clr_num = Ar;
+                const Cli_num = Ai;
+                const Clr_den = 1.0 + beta * Ar;
+                const Cli_den = beta * Ai;
+                const Cl_denSquared = Clr_den * Clr_den + Cli_den * Cli_den;
+
+                const A_CL_r = (Clr_num * Clr_den + Cli_num * Cli_den) / Cl_denSquared;
+                const A_CL_i = (Cli_num * Clr_den - Clr_num * Cli_den) / Cl_denSquared;
+
+                const A_CL_mag = Math.sqrt(A_CL_r * A_CL_r + A_CL_i * A_CL_i);
+                closedLoopMag.push({ x: f, y: 20.0 * Math.log10(A_CL_mag) });
+                
+                const A_CL_phase = Math.atan2(A_CL_i, A_CL_r) * (180.0 / Math.PI);
+                closedLoopPh.push({ x: f, y: A_CL_phase });
+            }
+
+            // Analytical Crossover & PM Calculations
+            const fc = getCrossoverFrequency(A0, p1, p2, z1, beta);
+            const rawPhaseAtFc = getPhaseAtFrequency(fc, p1, p2, z1);
+            const pm = 180.0 + rawPhaseAtFc; // PM = 180 - total phase lag
+
+            // Populate dashboard metrics
+            document.getElementById('metric-a0-db').textContent = (20.0 * Math.log10(A0)).toFixed(1);
+            document.getElementById('metric-a0-linear').textContent = `${Math.round(A0).toLocaleString()} V/V`;
+
+            // Format Poles nicely
+            formatFrequencyMetric('metric-fp1', 'metric-fp1-unit', p1 / (2 * Math.PI));
+            document.getElementById('metric-p1-rad').textContent = `${(p1).toExponential(2)} rad/s`;
+
+            formatFrequencyMetric('metric-fp2', 'metric-fp2-unit', p2 / (2 * Math.PI));
+            document.getElementById('metric-p2-rad').textContent = `${(p2).toExponential(2)} rad/s`;
+
+            // Format Zero elegantly
+            const fz = z1 === Infinity ? Infinity : Math.abs(z1) / (2 * Math.PI);
+            const zeroTypeBadge = document.getElementById('metric-fz-type');
+            if (fz === Infinity) {
+                document.getElementById('metric-fz').textContent = "∞";
+                document.getElementById('metric-fz-unit').textContent = "";
+                document.getElementById('metric-fz-type').textContent = "Canceled";
+                zeroTypeBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold uppercase font-mono bg-emerald-950 text-emerald-400 border border-emerald-500/30";
+            } else {
+                formatFrequencyMetric('metric-fz', 'metric-fz-unit', fz);
+                if (z1 > 0) {
+                    document.getElementById('metric-fz-type').textContent = "RHP (Lag)";
+                    zeroTypeBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold uppercase font-mono bg-red-950 text-red-400 border border-red-500/30";
+                } else {
+                    document.getElementById('metric-fz-type').textContent = "LHP (Lead)";
+                    zeroTypeBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold uppercase font-mono bg-blue-950 text-blue-400 border border-blue-500/30";
+                }
+            }
+
+            // Format Crossover Frequency
+            formatFrequencyMetric('metric-fc', 'metric-fc-unit', fc);
+
+            // Phase Margin text feedback
+            const pmTextElement = document.getElementById('metric-pm');
+            const pmDescElement = document.getElementById('metric-pm-desc');
+            const badgeContainer = document.getElementById('stability-badge-container');
+            const badgeText = document.getElementById('stability-status-text');
+            const badgeFeedback = document.getElementById('stability-pm-feedback');
+
+            if (fc === 0.0) {
+                pmTextElement.textContent = "N/A";
+                pmDescElement.textContent = "Loop gain is less than 0dB at all frequencies.";
+                badgeContainer.className = "flex flex-col items-center justify-center p-3 rounded-lg border h-full min-w-[120px] bg-slate-900 border-slate-700 text-slate-400";
+                badgeText.textContent = "INACTIVE";
+                badgeFeedback.textContent = "No loop gain";
+            } else {
+                const roundedPM = Math.round(pm);
+                pmTextElement.textContent = roundedPM;
+
+                if (roundedPM >= 55) {
+                    pmDescElement.textContent = "Robust stability. Perfectly critically damped/overdamped step response.";
+                    badgeContainer.className = "flex flex-col items-center justify-center p-3 rounded-lg border h-full min-w-[120px] bg-emerald-950/40 border-emerald-500/30 text-emerald-400 glow-green";
+                    badgeText.textContent = "STABLE";
+                    badgeFeedback.textContent = "Optimal Phase Margin";
+                } else if (roundedPM > 0 && roundedPM < 55) {
+                    pmDescElement.textContent = "Marginally stable. Significant ringing and overshoot in transient response.";
+                    badgeContainer.className = "flex flex-col items-center justify-center p-3 rounded-lg border h-full min-w-[120px] bg-yellow-950/40 border-yellow-500/30 text-yellow-400 glow-yellow";
+                    badgeText.textContent = "MARGINAL";
+                    badgeFeedback.textContent = "Transient Ringing";
+                } else {
+                    pmDescElement.textContent = "Unstable. Positive feedback loop dominates; amplifier acts as a raw oscillator.";
+                    badgeContainer.className = "flex flex-col items-center justify-center p-3 rounded-lg border h-full min-w-[120px] bg-red-950/40 border-red-500/30 text-red-400 glow-red animate-pulse";
+                    badgeText.textContent = "UNSTABLE";
+                    badgeFeedback.textContent = "Active Oscillation";
+                }
+            }
+
+            // Estimate op-amp slew rate bonus calculation
+            const estimatedI_tail = 150e-6; // 150 uA
+            const SR = estimatedI_tail / CM; // V/s
+            document.getElementById('metric-sr').textContent = `${(SR / 1e6).toFixed(1)} V/μs`;
+
+            // Calculate analytical step response data
+            const stepRes = calculateAnalyticalStepResponse(A0, p1, p2, z1, beta);
+
+            // Populate step response transient metrics
+            document.getElementById('metric-zeta').textContent = stepRes.zeta < 0 ? `${stepRes.zeta.toFixed(2)} (Unstable)` : stepRes.zeta.toFixed(3);
+            document.getElementById('metric-overshoot').textContent = stepRes.isStable ? `${stepRes.overshoot.toFixed(1)}%` : '∞ (Unstable)';
+            document.getElementById('metric-tr').textContent = formatTimeMetric(stepRes.tr);
+            document.getElementById('metric-ts').textContent = formatTimeMetric(stepRes.ts);
+
+            // Draw Charts Updated values
+            updateCharts(openLoopMag, loopGainMag, closedLoopMag, openLoopPh, loopGainPh, closedLoopPh, p1 / (2*Math.PI), p2 / (2*Math.PI), fz, fc, stepRes);
+        }
+
+        // Beautiful dynamic scaling formatter for frequency
+        function formatFrequencyMetric(valId, unitId, valHz) {
+            if (valHz === Infinity) {
+                document.getElementById(valId).textContent = "∞";
+                document.getElementById(unitId).textContent = "";
+                return;
+            }
+            if (valHz >= 1e9) {
+                document.getElementById(valId).textContent = (valHz / 1e9).toFixed(2);
+                document.getElementById(unitId).textContent = "GHz";
+            } else if (valHz >= 1e6) {
+                document.getElementById(valId).textContent = (valHz / 1e6).toFixed(2);
+                document.getElementById(unitId).textContent = "MHz";
+            } else if (valHz >= 1e3) {
+                document.getElementById(valId).textContent = (valHz / 1e3).toFixed(1);
+                document.getElementById(unitId).textContent = "kHz";
+            } else {
+                document.getElementById(valId).textContent = valHz.toFixed(0);
+                document.getElementById(unitId).textContent = "Hz";
+            }
+        }
+
+        // Format time values cleanly (s, ms, us, ns, ps)
+        function formatTimeMetric(valSeconds) {
+            if (valSeconds === null || isNaN(valSeconds) || !isFinite(valSeconds)) return "N/A";
+            if (valSeconds >= 1) return `${valSeconds.toFixed(2)} s`;
+            if (valSeconds >= 1e-3) return `${(valSeconds * 1e3).toFixed(2)} ms`;
+            if (valSeconds >= 1e-6) return `${(valSeconds * 1e6).toFixed(2)} μs`;
+            if (valSeconds >= 1e-9) return `${(valSeconds * 1e9).toFixed(2)} ns`;
+            if (valSeconds >= 1e-12) return `${(valSeconds * 1e12).toFixed(2)} ps`;
+            return `${valSeconds.toExponential(2)} s`;
+        }
+
+        // Setup the synchronized charts
+        function initializeCharts() {
+            const chartOptions = (title, yMin, yMax, yStep, isPhase) => ({
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 150 },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: '#1f2937',
+                        titleColor: '#f3f4f6',
+                        bodyColor: '#e5e7eb',
+                        borderColor: '#374151',
+                        borderWidth: 1,
+                        callbacks: {
+                            title: (items) => {
+                                let val = items[0].parsed.x;
+                                if (val >= 1e9) return `Frequency: ${(val/1e9).toFixed(2)} GHz`;
+                                if (val >= 1e6) return `Frequency: ${(val/1e6).toFixed(2)} MHz`;
+                                if (val >= 1e3) return `Frequency: ${(val/1e3).toFixed(1)} kHz`;
+                                return `Frequency: ${val.toFixed(0)} Hz`;
+                            },
+                            label: (context) => {
+                                let label = context.dataset.label || '';
+                                if (label) label += ': ';
+                                if (context.parsed.y !== null) {
+                                    label += context.parsed.y.toFixed(1) + (isPhase ? '°' : ' dB');
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'logarithmic',
+                        position: 'bottom',
+                        grid: { color: '#1e293b', lineWidth: 1 },
+                        ticks: {
+                            color: '#64748b',
+                            callback: function(value) {
+                                if (value === 1) return "1 Hz";
+                                if (value === 10) return "10 Hz";
+                                if (value === 100) return "100 Hz";
+                                if (value === 1000) return "1 kHz";
+                                if (value === 10000) return "10 kHz";
+                                if (value === 100000) return "100 kHz";
+                                if (value === 1000000) return "1 MHz";
+                                if (value === 10000000) return "10 MHz";
+                                if (value === 100000000) return "100 MHz";
+                                if (value === 1000000000) return "1 GHz";
+                                if (value === 10000000000) return "10 GHz";
+                                return null;
+                            }
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        min: yMin,
+                        max: yMax,
+                        ticks: {
+                            stepSize: yStep,
+                            color: '#64748b',
+                            font: { size: 10 }
+                        },
+                        grid: { color: '#1e293b' }
+                    }
+                }
+            });
+
+            // Initialize Magnitude Bode Plot
+            const ctxMag = document.getElementById('chart-magnitude').getContext('2d');
+            chartMag = new Chart(ctxMag, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'Open-Loop Gain', data: [], borderColor: '#f59e0b', borderWidth: 2, pointRadius: 0, hoverRadius: 5 },
+                        { label: 'Loop Gain', data: [], borderColor: '#10b981', borderWidth: 2, pointRadius: 0, hoverRadius: 5 },
+                        { label: 'Closed-Loop Gain', data: [], borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, hoverRadius: 5 }
+                    ]
+                },
+                options: chartOptions('Magnitude Response', -40, 120, 20, false)
+            });
+
+            // Initialize Phase Bode Plot
+            const ctxPh = document.getElementById('chart-phase').getContext('2d');
+            chartPh = new Chart(ctxPh, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'Open-Loop Phase', data: [], borderColor: '#f59e0b', borderWidth: 2, borderDash: [4, 4], pointRadius: 0, hoverRadius: 5 },
+                        { label: 'Loop Gain Phase', data: [], borderColor: '#10b981', borderWidth: 2, pointRadius: 0, hoverRadius: 5 },
+                        { label: 'Closed-Loop Phase', data: [], borderColor: '#3b82f6', borderWidth: 2, pointRadius: 0, hoverRadius: 5 }
+                    ]
+                },
+                options: chartOptions('Phase Response', -270, 90, 45, true)
+            });
+
+            // Initialize Time-Domain Step Response Chart
+            const ctxStep = document.getElementById('chart-step').getContext('2d');
+            chartStep = new Chart(ctxStep, {
+                type: 'line',
+                data: {
+                    datasets: [
+                        { label: 'Target V_target', data: [], borderColor: '#64748b', borderWidth: 1.5, borderDash: [4, 4], pointRadius: 0 },
+                        { label: 'Step Response V_out(t)', data: [], borderColor: '#38bdf8', borderWidth: 2.5, pointRadius: 0, hoverRadius: 6 }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 150 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: '#1f2937',
+                            titleColor: '#f3f4f6',
+                            bodyColor: '#e5e7eb',
+                            borderColor: '#374151',
+                            borderWidth: 1,
+                            callbacks: {
+                                title: (items) => `Time: ${formatTimeMetric(items[0].parsed.x)}`,
+                                label: (context) => {
+                                    let label = context.dataset.label || '';
+                                    if (label) label += ': ';
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toFixed(3) + ' V/V';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            grid: { color: '#1e293b' },
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 10 },
+                                callback: function(val) {
+                                    return formatTimeMetric(val);
+                                }
+                            }
+                        },
+                        y: {
+                            type: 'linear',
+                            grid: { color: '#1e293b' },
+                            ticks: {
+                                color: '#64748b',
+                                font: { size: 10 }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Link Tooltip Hover across stacked Bode plots
+            const containerM = document.getElementById('chart-magnitude');
+            const containerP = document.getElementById('chart-phase');
+            
+            // Custom synchronized cursor trigger
+            containerM.addEventListener('mousemove', (evt) => syncHover(evt, chartMag, chartPh));
+            containerP.addEventListener('mousemove', (evt) => syncHover(evt, chartPh, chartMag));
+        }
+
+        // Synchronize cursors across Bode plots
+        function syncHover(event, sourceChart, targetChart) {
+            const points = sourceChart.getElementsAtEventForMode(event, 'index', { intersect: false }, true);
+            if (points.length) {
+                const index = points[0].index;
+                const activeEl = targetChart.getDatasetMeta(0).data[index];
+                if (activeEl) {
+                    targetChart.tooltip.setActiveElements([{ datasetIndex: 0, index: index }], { x: activeEl.x, y: activeEl.y });
+                    targetChart.update();
+                }
+            }
+        }
+
+        // Update charts datasets
+        function updateCharts(oM, lM, cM, oP, lP, cP, fp1, fp2, fz, fc, stepRes) {
+            if (!chartMag || !chartPh || !chartStep) return;
+
+            // Load arrays into Bode charts
+            chartMag.data.datasets[0].data = oM;
+            chartMag.data.datasets[1].data = lM;
+            chartMag.data.datasets[2].data = cM;
+
+            chartPh.data.datasets[0].data = oP;
+            chartPh.data.datasets[1].data = lP;
+            chartPh.data.datasets[2].data = cP;
+
+            // Load arrays into Step Response chart
+            chartStep.data.datasets[0].data = stepRes.targetPoints;
+            chartStep.data.datasets[1].data = stepRes.stepPoints;
+
+            // Adjust stroke color dynamically based on stability
+            if (!stepRes.isStable) {
+                chartStep.data.datasets[1].borderColor = '#ef4444'; // Red if unstable
+            } else if (stepRes.overshoot > 15) {
+                chartStep.data.datasets[1].borderColor = '#eab308'; // Yellow if underdamped
+            } else {
+                chartStep.data.datasets[1].borderColor = '#38bdf8'; // Sky blue if stable
+            }
+
+            // Custom annotations: Adding vertical markers directly on the Bode charts
+            chartMag.options.plugins.annotation = { annotations: {} };
+            chartPh.options.plugins.annotation = { annotations: {} };
+
+            const buildVerticalLine = (fValue, label, color) => ({
+                type: 'line',
+                xMin: fValue,
+                xMax: fValue,
+                borderColor: color,
+                borderWidth: 1.5,
+                borderDash: [5, 5],
+                label: {
+                    display: true,
+                    content: label,
+                    position: 'end',
+                    backgroundColor: 'rgba(17, 24, 39, 0.85)',
+                    color: color,
+                    font: { size: 9, family: 'monospace' }
+                }
+            });
+
+            // Put markers into configuration
+            const magAnnotations = {};
+            const phAnnotations = {};
+
+            if (fp1 > 0 && fp1 < 1e10) {
+                magAnnotations.fp1 = buildVerticalLine(fp1, 'fp1', '#22c55e');
+            }
+            if (fp2 > 0 && fp2 < 1e10) {
+                magAnnotations.fp2 = buildVerticalLine(fp2, 'fp2', '#3b82f6');
+            }
+            if (fz > 0 && fz < 1e10 && fz !== Infinity) {
+                magAnnotations.fz = buildVerticalLine(fz, 'fz', '#eab308');
+            }
+            if (fc > 0 && fc < 1e10) {
+                magAnnotations.fc = buildVerticalLine(fc, 'fc', '#f43f5e');
+                phAnnotations.fc = buildVerticalLine(fc, 'fc', '#f43f5e');
+            }
+
+            // Assign updated annotations
+            chartMag.options.plugins.annotation = { annotations: magAnnotations };
+            chartPh.options.plugins.annotation = { annotations: phAnnotations };
+
+            // Update layout
+            chartMag.update();
+            chartPh.update();
+            chartStep.update();
+        }
+    </script>
+
+    <!-- Custom inline chart annotation simple logic fallback to keep dependencies clean -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@2.0.1"></script>
+
+</body>
+</html>
