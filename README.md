@@ -21,6 +21,29 @@ This project is built upon the analog integrated circuit design curriculum and p
 * 📑 **Reference Slide Deck:** The reference slide deck [`docs/2_stage_opamp.pdf`](docs/2_stage_opamp.pdf) is part of his official Analog IC Design lecture notes (accessible from the Downloads / Assignments tab of the NPTEL course).
 
 ---
+## 🌐 Interactive Stability & Bode Visualizer
+
+An interactive, browser-based stability analyzer and transient response visualizer for this two-stage CMOS op-amp design.
+
+👉 **[Launch Interactive Web Visualizer](https://<username>.github.io/<repo-name>/interactive-webpage/two_stage_cmos_op_amp_visualizer.html)**  
+*(To view the source file locally or in the repo, browse to [`/interactive-webpage/two_stage_cmos_op_amp_visualizer.html`](./interactive-webpage/two_stage_cmos_op_amp_visualizer.html))*
+
+---
+
+### Key Features
+
+* **Real-Time Bode Characterization**: Simultaneous plotting of Open-Loop Gain ($A$), Loop Gain ($\beta A$), and Closed-Loop Gain ($A_{CL}$) magnitude and phase.
+* **Miller Compensation & Zero Nulling**: Adjust $C_M$ and $R_Z$ to watch pole-splitting and observe the movement of the right-half-plane (RHP) zero into the left-half-plane (LHP) for pole-zero cancellation.
+* **Analytical Step Response Engine**: Computes closed-loop time-domain step responses displaying damping ratio ($\zeta$), peak overshoot, rise time ($t_r$), and 2% settling time ($t_s$).
+* **Pre-Configured Architecture Presets**:
+  * **Highly Stable**: Optimized LHP pole-zero cancellation with optimal phase margin.
+  * **Under-Compensated**: Demonstrates phase degradation and instability caused by an uncompensated RHP zero.
+  * **Balanced Classic**: Classical design setting $R_Z \approx 1/g_{m2}$ for Phase Margin $\approx 60^\circ$.
+  * **Sandbox Mode**: Full manual control of $g_{m1}, r_1, g_{m2}, r_2, C_M, R_Z, C_L,$ and feedback factor $\beta$.
+* **Interactive SVG Topology**: Circuit schematic with interactive hover highlights corresponding to small-signal parameter groups.
+
+### Running Locally
+No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser
 
 ## 📖 Complete Design Guide & Mathematical Derivations
 
