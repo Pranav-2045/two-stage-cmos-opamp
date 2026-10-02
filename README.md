@@ -40,7 +40,7 @@ An interactive, browser-based stability analyzer and transient response visualiz
   * **Sandbox Mode**: Full manual control of $g_{m1}, r_1, g_{m2}, r_2, C_M, R_Z, C_L,$ and feedback factor $\beta$.
 * **Interactive SVG Topology**: Circuit schematic with interactive hover highlights corresponding to small-signal parameter groups.
 
-### Running Locally
+## Running Locally
 No web server or npm dependencies are required. Clone the repository and open the file directly in any modern browser
 ---
 ## 📖 Complete Design Guide & Mathematical Derivations
